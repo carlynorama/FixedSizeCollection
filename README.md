@@ -6,6 +6,8 @@ Specs are in TODO.md
 - https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 - https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
 - https://github.com/search?q=org%3AApple%20Data&type=code
+- https://github.com/search?q=org%3AApple+withCString&type=code
+- https://github.com/apple/swift/blob/main/stdlib/public/core/StaticString.swift#L72
 - https://github.com/apple/swift-corelibs-libdispatch/blob/bb1cb6afb589e911cd808cb98e03d54603b14e16/src/swift/Data.swift#L16
 - https://github.com/apple/swift-collections
 - https://github.com/apple/swift-algorithms
