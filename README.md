@@ -1,5 +1,6 @@
 # FixedSizeCollection
 
+Specs are in TODO.md
 
 ## References
 - https://forums.swift.org/t/approaches-for-fixed-size-arrays/
