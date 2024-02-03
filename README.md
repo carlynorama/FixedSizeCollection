@@ -74,8 +74,7 @@ var myArray:[Int * 10], var myArray:[Int x 10]
 
 No, not really, but it's easy for prototyping and will keep me from dropping into C.
 
-Previous underlying storage idea by Joe_Groff
-
+Previous underlying storage idea by Joe_Groff. Better than Data, but this implementation needs for count to be a let and all memory created on init with a default value.
 //https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/33
 
 ```swift
