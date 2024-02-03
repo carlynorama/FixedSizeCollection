@@ -16,6 +16,7 @@
 - [ ] add linter plugin
 - [ ] the badges / swift level info
 - [ ] platform info in Package.swift
+- [ ] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up.
 
 
 
