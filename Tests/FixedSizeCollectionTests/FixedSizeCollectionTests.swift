@@ -20,7 +20,7 @@ final class FixedSizeCollectionTests: XCTestCase {
         XCTAssertEqual(testCollection[4], nil, "collection 3 incorrect")
     }
     
-    func testMeasureAccess() {
+    func testAccess() {
         let baseArray = [1, 2, 3, 7]
         let testCollection = FixedSizeCollection<Int?>(baseArray.count, default: nil) { baseArray }
         measure {
@@ -37,6 +37,15 @@ final class FixedSizeCollectionTests: XCTestCase {
                 let newVar = Int.random(in: 0...100)
                 testCollection[i] = newVar
                 XCTAssertEqual(testCollection[i], newVar, "collection did not update correctly")
+            }
+        }
+    }
+    
+    func testUpdateForEach() {
+        let testCollection = FixedSizeCollection<Int>(5, default: 0)
+        measure {
+            testCollection.forEach {
+                XCTAssertEqual($0, 0, "collection did not retrieve expected value")
             }
         }
     }
