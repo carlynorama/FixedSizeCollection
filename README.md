@@ -1,20 +1,64 @@
 # FixedSizeCollection
 
 
-https://forums.swift.org/t/approaches-for-fixed-size-arrays/
-https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
+## References
+- https://forums.swift.org/t/approaches-for-fixed-size-arrays/
+- https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
 
-- Must work well with C tuples
-    - coerce it to and from an equivalent tuple form using "as" ?
-    - looking for zeroed memory vs zero value possible?
+## Inits
+
+### Currently Implemented
+
+```swift
+    init(_ count:Int, default d:Element, initializer:() -> [Element] = { [] }) 
+    init(initializer:() -> [Element])
+    init(dataBlob: Data, as: Element.Type)
+```
 
 
-- get and set subscripts already done
-- No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
+### Inits of types from other languages
 
+[Benchmark repo](https://github.com/jabbalaci/SpeedTests) 
+```text
+C:         int cache[10];
+C++:       int cache[10];
+fortran:   integer, dimension(10) :: cache
+Go:        [10]int
+Java.      new int[10];
+Julia:     ntuple(i -> i^i, 9)...  # Tuple{Vararg{T,N}}
+Kotlin:    Array(10) { }
+nim:       array[10, int]
+Ruby:      [i32; 10]
+```
 
+Scheme:
+```
+  (list->vector
+    (cons
+      0
+      (let loop ((i 1))
+        (if (> i 10)
+          '()
+          (cons (expt i i)
+                (loop (+ i 1))))))))
+```
 
-## Really, Data?
+### Ideas from Thread
+
+What to do about default value. There has to be one. Even if its nil. Could be 0 for numerics. 
+
+```swift
+//What I'm working on.
+var myArray:[Int](10)
+var myArray:[Int](10, default:Int) //and longer, "size:" is a ? 
+
+var myArray:[Int, 10]
+var myArray:[Int * 10], var myArray:[Int x 10]
+@const myArray[Int] = //wasn't clear
+@const existingArray //would work like Object.freeze?
+```
+
+## Really, `Data`?
 
 No, not really, but it's easy for prototyping and will keep me from dropping into C.
 
@@ -46,7 +90,7 @@ struct SmallArray<capacity: Int, T> {
 
 Previous underlying storage concern: 
 
-Lastly, I think that at the same time fixed-size arrays with inline storage are introduced, there should also be a fixed-size array type with out-of-line storage which should be slightly easier to reach for. Without an out-of-line-storage alternative, I predict that we'll see a lot of people have gigantic fixed-size arrays of gigantic types in their structs without realizing how much overhead they incur. - fclout
+> Lastly, I think that at the same time fixed-size arrays with inline storage are introduced, there should also be a fixed-size array type with out-of-line storage which should be slightly easier to reach for. Without an out-of-line-storage alternative, I predict that we'll see a lot of people have gigantic fixed-size arrays of gigantic types in their structs without realizing how much overhead they incur. - fclout
 
 https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/46
 
