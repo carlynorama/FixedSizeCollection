@@ -2,7 +2,8 @@
 
 
 ## Specs
-- [ ] Must work well with C tuples
+- [ ] Must work well with C tuples 
+    - see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
     - [ ] coerce it to and from an equivalent tuple form using "as" ?
     - [ ] looking for zeroed memory vs zero value possible?
 - [ ] proto get and set subscripts already done
