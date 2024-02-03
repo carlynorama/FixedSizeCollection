@@ -4,6 +4,18 @@
 ## References
 - https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 - https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
+- https://github.com/search?q=org%3AApple%20Data&type=code
+- https://github.com/apple/swift-corelibs-libdispatch/blob/bb1cb6afb589e911cd808cb98e03d54603b14e16/src/swift/Data.swift#L16
+- https://github.com/apple/swift-collections
+- https://github.com/apple/swift-algorithms
+- https://github.com/carlynorama/UnsafeWrapCSampler
+- https://github.com/carlynorama/UnsafeExplorer
+
+## Major Use Cases
+
+- Interfacing with C
+- Speed? 
+- ??? 
 
 ## Inits
 
@@ -14,7 +26,6 @@
     init(initializer:() -> [Element])
     init(dataBlob: Data, as: Element.Type)
 ```
-
 
 ### Inits of types from other languages
 
@@ -45,7 +56,7 @@ Scheme:
 
 ### Ideas from Thread
 
-What to do about default value. There has to be one. Even if its nil. Could be 0 for numerics. 
+What to do about default value. There has to be one. Should be an init that lets the dev pick it. Even if its nil. Could be 0 for numerics. 
 
 ```swift
 //What I'm working on.
