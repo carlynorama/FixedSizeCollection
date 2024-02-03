@@ -56,7 +56,7 @@ Scheme:
 
 ### Ideas from Thread
 
-What to do about default value. There has to be one. Should be an init that lets the dev pick it. Even if its nil. Could be 0 for numerics. 
+What to do about default value. There has to be one. Should be an init that lets the client pick it. Even if its nil. Could be 0 for numerics. 
 
 ```swift
 //What I'm working on.
@@ -69,7 +69,7 @@ var myArray:[Int * 10], var myArray:[Int x 10]
 @const existingArray //would work like Object.freeze?
 ```
 
-## Really, `Data`?
+## Backing Memory: `Data`? Really?
 
 No, not really, but it's easy for prototyping and will keep me from dropping into C.
 
