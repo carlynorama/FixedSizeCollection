@@ -5,6 +5,8 @@ Specs are in TODO.md
 ## References
 - https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 - https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
+- https://github.com/apple/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md
+
 - https://github.com/search?q=org%3AApple%20Data&type=code
 - https://github.com/search?q=org%3AApple+withCString&type=code
 - https://github.com/apple/swift/blob/main/stdlib/public/core/StaticString.swift#L72
