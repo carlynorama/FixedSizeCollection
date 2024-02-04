@@ -9,21 +9,32 @@
 
 import Foundation
 
-
+//Unresolved. Should perhaps be N:Int in the generic.
 public struct FixedSizeCollection<Element> : RandomAccessCollection {
-    public let count:Int
+    public typealias N = Int
+    public let count:N   //Unresolved. Int, UInt, CInt... For now starting with Int.
     public var startIndex: Int { 0 }
     public var endIndex: Int { count }
+    
+    //MAY GO AWAY.
+    let defaultValue:Element? //TODO: if Element:Optional
     
     //What is the best storage type?
     //Data good for prototyping
     private var dataBlob:Data
+    
+    private var memSizeFull:N {  MemoryLayout<Element>.size * count }
+    private var memSizeElem:N {  MemoryLayout<Element>.size }
+    private func offsetSize(itemCount:N) -> N { MemoryLayout<Element>.size * itemCount }
+    
+
     
 }
 //MARK: Inits
 public extension FixedSizeCollection {
     init(_ count:Int, default d:Element, initializer:() -> [Element] = { [] }) {
         self.count = count
+        self.defaultValue = d
         var result = initializer().prefix(count)
         //if result.count > count { return nil }
         for _ in 0...(count - result.count) {
@@ -34,7 +45,8 @@ public extension FixedSizeCollection {
         }
     }
     
-    init(initializer:() -> [Element]) {
+    init(default d:Element? = nil, initializer:() -> [Element]) {
+        self.defaultValue = d
         var tmp = initializer()
         self.dataBlob = tmp.withUnsafeMutableBufferPointer { pointer in
             Data(buffer: pointer)
@@ -47,10 +59,8 @@ public extension FixedSizeCollection {
         }
     }
     
-    
-    
-    init(dataBlob: Data, as: Element.Type) {
-        
+    init(dataBlob: Data, as: Element.Type, default d:Element? = nil) {
+        self.defaultValue = d
         self.dataBlob = dataBlob
         self.count = dataBlob.withUnsafeBytes { bytes in
             let tmpCount = bytes.count / MemoryLayout<Element>.stride
@@ -59,6 +69,20 @@ public extension FixedSizeCollection {
             return tmpCount
         }
     }
+    
+    //TODO: Initialize/Factory method COPY that works well retrieving copy of C array
+    /*
+     public func makeArrayOfRandomIntClosure(count:Int) -> [Int] {
+         //Count for this initializer is really MAX count possible, function may return an array with fewer items defined.
+         //both buffer and initializedCount are inout
+         let tmp = Array<CInt>(unsafeUninitializedCapacity: count) { buffer, initializedCount in
+             //C:-- void random_array_of_zero_to_one_hundred(int* array, const size_t n);
+             random_array_of_zero_to_one_hundred(buffer.baseAddress, count)
+             initializedCount = count // if initializedCount is not set, Swift assumes 0, and the array returned is empty.
+         }
+         return tmp.map { Int($0) }
+     }
+     */
 }
 
 //MARK: Access
@@ -73,19 +97,66 @@ public extension FixedSizeCollection {
         set {
             let startIndex = dataBlob.startIndex + position * MemoryLayout<Element>.stride
             let endIndex = startIndex + MemoryLayout<Element>.stride
-            withUnsafePointer(to: newValue) { sourceValuePointer in
+            Swift.withUnsafePointer(to: newValue) { sourceValuePointer in
                 dataBlob.replaceSubrange(startIndex..<endIndex, with: sourceValuePointer, count: MemoryLayout<Element>.stride)
             }
         }
     }
     
+    //TODO: Believe this is copy,copy not COW.
     var all:[Element] {
         loadFixedSizeCArray(source: dataBlob, ofType: Element.self) ?? []
     }
     
-    //Anything Data does...
+    //MARK: Unsafe
+    //------------------------------------------------ RAW
+    //-------- Anything Data does...
     func withUnsafeBytes<ResultType>(body: (UnsafeRawBufferPointer) throws -> ResultType) throws -> ResultType {
         try dataBlob.withUnsafeBytes(body)
+    }
+    
+    mutating
+    func withUnsafeMutableBytes<ResultType>(body: (UnsafeMutableRawBufferPointer) throws -> ResultType) throws -> ResultType {
+        try dataBlob.withUnsafeMutableBytes(body)
+    }
+    
+    //----------------------------------- Bound to Element
+    func withUnsafeBufferPointer<ResultType>(body: (UnsafeBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
+        return try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
+            //Think this might be okay in this context.
+            //declared an element pointer works, but gets freed prematurely.
+            //var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
+            return try unsafeRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
+                return try body(bufferPointer)
+            }
+        }
+    }
+    
+    mutating
+    func withUnsafeMutableBufferPointer<ResultType>(body: (UnsafeMutableBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
+        try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
+            return try unsafeMutableRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
+                return try body(bufferPointer)
+            }
+        }
+    }
+    
+    func withUnsafePointer<ResultType>(body: (UnsafePointer<Element>?) throws -> ResultType) throws -> ResultType {
+        return try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
+            return try unsafeRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
+                return try body(bufferPointer.baseAddress)
+            }
+        }
+    }
+    
+
+    mutating
+    func withUnsafeMutablePointer<ResultType>(body: (UnsafeMutablePointer<Element>?) throws -> ResultType) throws -> ResultType {
+        return try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
+            return try unsafeMutableRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
+                return try body(bufferPointer.baseAddress)
+            }
+        }
     }
 }
 
