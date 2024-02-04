@@ -10,10 +10,10 @@
     - Misc Options from the post
         - importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array,
         - conditionalizing the behavior on language version mode, so that Swift 6 code sees the imported field in its array form.
-- [ ] proto get and set subscripts already done
+- [ ] proto get and set subscripts already done, but subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
 - [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
-- [ ] when [unchecked:] becomes a thing, use it by default.
-- [ ] a safe insert that will do bounds checking
+- [ ] when [unchecked:] becomes a thing, implement it.
+- [ ] an unsafe insert that will skip bounds checking. `.gunc(at: )`
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
 - [ ] matrix[0][24] style init of some format
 - [ ] matrix access
@@ -38,6 +38,8 @@
 
 
 ## C interop targets
+
+- [ ] [nonmutable inout](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1), please.
 
 [SysEx messages in CoreMIDI](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25)
 
