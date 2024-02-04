@@ -57,54 +57,52 @@ extension FixedSizeCollection {
     //--------------------------------------------------------------------
     //error: Exited with signal code 11
     static func boundBufferPointerPrint() throws {
-        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        let testCollection = FixedSizeCollection<Int32>(5, default: 5)
         //Swift Type:  'UnsafeBufferPointer<Int32>'
         //C func: void (const int*, const size_t)
         try testCollection.withUnsafeBufferPointer { bufferPointer in
+            if let bufferPointer {
+                acknowledge_cint_buffer_const(bufferPointer.baseAddress, bufferPointer.count)
+            }
+        }
+    }
+    
+    //Safest way to handle this is with the buffer pointer.
+    static func boundMutableBufferPointerPrint() throws {
+        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        //Swift Type:  'UnsafeMutableBufferPointer<Int32>'
+        //C func: void (int*, const size_t)
+        try testCollection.withUnsafeMutableBufferPointer { bufferPointer in
             if let bufferPointer {
                 acknowledge_cint_buffer(bufferPointer.baseAddress, bufferPointer.count)
             }
         }
     }
-//    
-//    static func boundMutableBufferPointerPrint() throws {
-//        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
-//        //Expected Failure. C function takes int* array, which is an ask for the base address.
-//        //TODO: Check against ??
-//        //error: cannot convert value of type 'UnsafeMutableBufferPointer<Int32>?' to expected argument type 'UnsafeMutablePointer<Int32>?'
-//        testCollection.withUnsafeMutableBufferPointer { pointer in
-//            acknowledge_buffer(pointer, testCollection.count)
-//        }
-//    }
-//    
-//    
-//    //-------------------------  //void acknowledge_buffer(int* array, const size_t n);
-//    
-//    static func mutableBufferPointerBaseaddressPrint() throws {
-//        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
-//        let tmp_count = testCollection.count
-//        //Safest way to handle this is with the buffer pointer.
-//        try testCollection.withUnsafeMutableBufferPointer { bufferPointer in
-//            if let bufferPointer {
-//                precondition(tmp_count == bufferPointer.count)
-//                acknowledge_buffer(bufferPointer.baseAddress, bufferPointer.count)
-//            }
-//        }
-//        
-//    }
-//    
-//    static func mutablePointerPrint() throws {
-//        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
-//        let tmp_count = testCollection.count
-//        //but if really want just the pointer
-//        try testCollection.withUnsafeMutablePointer { pointer in
-//            if let pointer {
-//                //this check currently happens in withUnsafeMutablePointer.
-//                //precondition(testCollection.count == bufferPointer.count)
-//                acknowledge_buffer(pointer, tmp_count)
-//            }
-//        }
-//    }
-//    
+
+    //but if really want just the pointer
+    static func boundPointerPrint() throws {
+        let testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        let tmp_count = testCollection.count
+        //Swift Type:  'UnsafePointer<Int32>'
+        //C func: void (cont int*, const size_t)
+        try testCollection.withUnsafePointer { pointer in
+            if let pointer {
+                acknowledge_cint_buffer_const(pointer, tmp_count)
+            }
+        }
+    }
+    
+    static func boundMutablePointerPrint() throws {
+        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        let tmp_count = testCollection.count
+        //Swift Type:  'UnsafePointer<Int32>'
+        //C func: void (int*, const size_t)
+        try testCollection.withUnsafeMutablePointer { pointer in
+            if let pointer {
+                acknowledge_cint_buffer(pointer, tmp_count)
+            }
+        }
+    }
+    
     
 }

@@ -122,54 +122,42 @@ public extension FixedSizeCollection {
     
     //----------------------------------- Bound to Element
     func withUnsafeBufferPointer<ResultType>(body: (UnsafeBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
-        let tmp_count = self.count
-        return try dataBlob.withUnsafeBytes { unsafeMutableRawBufferPointer in
+        return try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
             //Think this might be okay in this context.
             //declared an element pointer works, but gets freed prematurely.
             //var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
+            return try unsafeRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
+                return try body(bufferPointer)
+            }
+        }
+    }
+    
+    mutating
+    func withUnsafeMutableBufferPointer<ResultType>(body: (UnsafeMutableBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
+        try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
             return try unsafeMutableRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
                 return try body(bufferPointer)
             }
         }
     }
     
-//    mutating
-//    func withUnsafeMutableBufferPointer<ResultType>(body: (UnsafeMutableBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
-//        try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
-              //Think this is the line that breaks it.
-//            var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
-//            return try elementPointer.withUnsafeMutableBufferPointer { bufferPointer in
-//                return try body(bufferPointer)
-//            }
-//        }
-//    }
-//    
-//    func withUnsafePointer<ResultType>(body: (UnsafePointer<Element>?) throws -> ResultType) throws -> ResultType {
-//        try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
-//            let elementPointer = unsafeRawBufferPointer.load(as: [Element].self)
-//            return try elementPointer.withUnsafeBufferPointer { bufferPointer in
-//                //TODO: worth doing?, worth throwing?
-//                precondition(bufferPointer.count == self.count)
-//                return try body(bufferPointer.baseAddress)
-//            }
-//        }
-//    }
-//    
-//
-//    mutating
-//    func withUnsafeMutablePointer<ResultType>(body: (UnsafeMutablePointer<Element>?) throws -> ResultType) throws -> ResultType {
-//        let tmp_count = self.count
-//        return try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
-//            var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
-//            return try elementPointer.withUnsafeMutableBufferPointer { bufferPointer in
-//                //TODO: worth doing?, worth throwing?
-//                precondition(bufferPointer.count == tmp_count)
-//                return try body(bufferPointer.baseAddress)
-//            }
-//        }
-//    }
+    func withUnsafePointer<ResultType>(body: (UnsafePointer<Element>?) throws -> ResultType) throws -> ResultType {
+        return try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
+            return try unsafeRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
+                return try body(bufferPointer.baseAddress)
+            }
+        }
+    }
     
-    
+
+    mutating
+    func withUnsafeMutablePointer<ResultType>(body: (UnsafeMutablePointer<Element>?) throws -> ResultType) throws -> ResultType {
+        return try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
+            return try unsafeMutableRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
+                return try body(bufferPointer.baseAddress)
+            }
+        }
+    }
 }
 
 //MARK: Helpers

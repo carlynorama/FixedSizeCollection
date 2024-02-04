@@ -16,14 +16,14 @@
 //MARK: Utility Prints
 //-------------------------------------------------------------------
 
-void acknowledge_buffer(int* array, const size_t n) {
+void acknowledge_cint_buffer(int* array, const size_t n) {
     printf("pointer: %p\n", array);
     for (size_t i = 0; i < n; i++) {
         printf("value %zu: %d\n", i, array[i]);
     }
 }
 
-void acknowledge_cint_buffer(const int* array, const size_t n) {
+void acknowledge_cint_buffer_const(const int* array, const size_t n) {
     printf("pointer: %p\n", array);
     for (size_t i = 0; i < n; i++) {
         printf("value %zu: %d\n", i, array[i]);
