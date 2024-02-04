@@ -6,6 +6,7 @@
     - see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
     - [ ] coerce it to and from an equivalent tuple form using "as" ?
     - [ ] looking for zeroed memory vs zero value possible?
+    - [ ] pass an individual Element or slice to a C function.
     - Misc Options from the post
         - importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array,
         - conditionalizing the behavior on language version mode, so that Swift 6 code sees the imported field in its array form.
@@ -14,9 +15,10 @@
 - [ ] when [unchecked:] becomes a thing, use it by default.
 - [ ] a safe insert that will do bounds checking
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
-- [ ] matrix[0][24] style init
+- [ ] matrix[0][24] style init of some format
 - [ ] matrix access
 - [ ] variadic inits
+
 
 
 ## Repo Meta / General Research Q's 
@@ -37,7 +39,7 @@
 
 ## C interop targets
 
-[SysEx messages in CoreMIDI](SysEx messages in CoreMIDI)
+[SysEx messages in CoreMIDI](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25)
 
 From: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
 Looked reasonable. See Color example in UnsafeExplorer.

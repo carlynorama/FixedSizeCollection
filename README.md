@@ -3,7 +3,7 @@
 
 
 ## References
-- Motivation Forum Post: https://forums.swift.org/t/approaches-for-fixed-size-arrays/
+- Motivating Forum Post: https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 - Previous Pitch: https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023
 
 ### Related Proposals
@@ -26,6 +26,7 @@
 
 - Interfacing with C
 - Speed.
+    - "guaranteed stack" 
     - Scratch Buffers Audio
     - Scratch Buffers Graphics
 - ??? 
@@ -104,7 +105,7 @@ var myArray:Int[_] = [1,2,3] for derived fixed size.
 
 ## Backing Memory: `Data`? Really?
 
-No, not really, but it's easy for prototyping and will keep me from dropping into C or C++, which I am assuming is undesired.
+No, not really really for the final implementation, but it's easy for prototyping and will limit the temptation to make a C or C++ backing type.
 
 There are pros and cons to every underlying memory choice. One main thrust of the motivating forum post is that a Fixed Array could be a property wrapper instantiating a view on an exiting type. It seems to be like JavaScript's Object.freeze/Object.seal while the fixed sized array is in use.  
 
@@ -144,4 +145,20 @@ Previous underlying storage concern:
 https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/46
 
 
-Another could be to just use a tuple as the backing memory.
+Another could be to just use a tuple as the backing memory. The feel on the street is that this would come with too much bagage.
+
+## Accessors 
+
+Initial prototypes done and simple tests 
+
+- subscript getter
+- subscript setter
+- withUnsafe
+    - withUnsafeBytes  //raw
+    - withUnsafeMutableBytes //raw
+    - withUnsafeBufferPointer //bound to Element
+    - withUnsafeMutableBufferPointer //bound to Element
+    - withUnsafePointer //bound to Element
+    - withUnsafeMutablePointer //bound to Element
+
+
