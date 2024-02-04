@@ -65,4 +65,10 @@ final class FixedSizeCollectionTests: XCTestCase {
     func testC_mutableRawBufferPointerPrint() throws {
         try FixedSizeCollection<CInt>.mutableRawBufferPointerPrint()
     }
+    
+    func testC_boundBufferPointerPrint() throws {
+        try FixedSizeCollection<CInt>.boundBufferPointerPrint()
+    }
 }
+
+

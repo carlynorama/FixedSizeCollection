@@ -123,6 +123,7 @@ public extension FixedSizeCollection {
     //----------------------------------- Bound to Element
     func withUnsafeBufferPointer<ResultType>(body: (UnsafeBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
         try dataBlob.withUnsafeBytes { unsafeMutableRawBufferPointer in
+            //NOPE: Thought this wasn't going to work. Does not.
             let elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
             return try elementPointer.withUnsafeBufferPointer { bufferPointer in
                 return try body(bufferPointer)
@@ -130,40 +131,40 @@ public extension FixedSizeCollection {
         }
     }
     
-    mutating
-    func withUnsafeMutableBufferPointer<ResultType>(body: (UnsafeMutableBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
-        try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
-            var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
-            return try elementPointer.withUnsafeMutableBufferPointer { bufferPointer in
-                return try body(bufferPointer)
-            }
-        }
-    }
-    
-    func withUnsafePointer<ResultType>(body: (UnsafePointer<Element>?) throws -> ResultType) throws -> ResultType {
-        try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
-            let elementPointer = unsafeRawBufferPointer.load(as: [Element].self)
-            return try elementPointer.withUnsafeBufferPointer { bufferPointer in
-                //TODO: worth doing?, worth throwing?
-                precondition(bufferPointer.count == self.count)
-                return try body(bufferPointer.baseAddress)
-            }
-        }
-    }
-    
-
-    mutating
-    func withUnsafeMutablePointer<ResultType>(body: (UnsafeMutablePointer<Element>?) throws -> ResultType) throws -> ResultType {
-        let tmp_count = self.count
-        return try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
-            var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
-            return try elementPointer.withUnsafeMutableBufferPointer { bufferPointer in
-                //TODO: worth doing?, worth throwing?
-                precondition(bufferPointer.count == tmp_count)
-                return try body(bufferPointer.baseAddress)
-            }
-        }
-    }
+//    mutating
+//    func withUnsafeMutableBufferPointer<ResultType>(body: (UnsafeMutableBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
+//        try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
+//            var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
+//            return try elementPointer.withUnsafeMutableBufferPointer { bufferPointer in
+//                return try body(bufferPointer)
+//            }
+//        }
+//    }
+//    
+//    func withUnsafePointer<ResultType>(body: (UnsafePointer<Element>?) throws -> ResultType) throws -> ResultType {
+//        try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
+//            let elementPointer = unsafeRawBufferPointer.load(as: [Element].self)
+//            return try elementPointer.withUnsafeBufferPointer { bufferPointer in
+//                //TODO: worth doing?, worth throwing?
+//                precondition(bufferPointer.count == self.count)
+//                return try body(bufferPointer.baseAddress)
+//            }
+//        }
+//    }
+//    
+//
+//    mutating
+//    func withUnsafeMutablePointer<ResultType>(body: (UnsafeMutablePointer<Element>?) throws -> ResultType) throws -> ResultType {
+//        let tmp_count = self.count
+//        return try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
+//            var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
+//            return try elementPointer.withUnsafeMutableBufferPointer { bufferPointer in
+//                //TODO: worth doing?, worth throwing?
+//                precondition(bufferPointer.count == tmp_count)
+//                return try body(bufferPointer.baseAddress)
+//            }
+//        }
+//    }
     
     
 }

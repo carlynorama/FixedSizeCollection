@@ -53,15 +53,19 @@ extension FixedSizeCollection {
         }
     }
     
-//    static func boundBufferPointerPrint() throws {
-//        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
-//        //Expected Failure. C function takes int* array, which is an ask for the base address.
-//        //TODO: Check against ??
-//        //error: cannot convert value of type 'UnsafeBufferPointer<Int32>?' to expected argument type 'UnsafeMutablePointer<Int32>?'
-//        testCollection.withUnsafeBufferPointer { pointer in
-//            acknowledge_cint_buffer(pointer, testCollection.count)
-//        }
-//    }
+    //------------------------------------------------------- HERE.
+    //--------------------------------------------------------------------
+    //error: Exited with signal code 11
+    static func boundBufferPointerPrint() throws {
+        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        //Swift Type:  'UnsafeBufferPointer<Int32>'
+        //C func: void (const int*, const size_t)
+        try testCollection.withUnsafeBufferPointer { bufferPointer in
+            if let bufferPointer {
+                acknowledge_cint_buffer(bufferPointer.baseAddress, bufferPointer.count)
+            }
+        }
+    }
 //    
 //    static func boundMutableBufferPointerPrint() throws {
 //        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
