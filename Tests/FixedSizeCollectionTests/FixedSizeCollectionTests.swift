@@ -57,7 +57,12 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     //Better way to test C? 
-    func testCPrint() throws {
-        try FixedSizeCollection<CInt>.basicPrint()
+    //TODO: Split off C to different test group.
+    func testC_rawBufferPointerPrint() throws {
+        try FixedSizeCollection<CInt>.rawBufferPointerPrint()
+    }
+    
+    func testC_mutableRawBufferPointerPrint() throws {
+        try FixedSizeCollection<CInt>.mutableRawBufferPointerPrint()
     }
 }

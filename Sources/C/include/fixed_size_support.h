@@ -24,6 +24,9 @@ void acknowledge_cint_buffer(const int* values, const size_t n);
 void acknowledge_uint32_buffer(const uint32_t* array, const size_t n);
 void acknowledge_uint8_buffer(const uint8_t* array, const size_t n);
 
+void print_opaque_const(const void* p, const size_t byte_count);
+void print_opaque(void* p, const size_t byte_count);
+
 
 //----------------------------------------------------- receive blobs
 void erased_tuple_receiver(const int* values, const size_t n);
