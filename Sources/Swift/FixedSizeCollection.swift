@@ -122,10 +122,12 @@ public extension FixedSizeCollection {
     
     //----------------------------------- Bound to Element
     func withUnsafeBufferPointer<ResultType>(body: (UnsafeBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
-        try dataBlob.withUnsafeBytes { unsafeMutableRawBufferPointer in
-            //NOPE: Thought this wasn't going to work. Does not.
-            let elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
-            return try elementPointer.withUnsafeBufferPointer { bufferPointer in
+        let tmp_count = self.count
+        return try dataBlob.withUnsafeBytes { unsafeMutableRawBufferPointer in
+            //Think this might be okay in this context.
+            //declared an element pointer works, but gets freed prematurely.
+            //var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
+            return try unsafeMutableRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
                 return try body(bufferPointer)
             }
         }
@@ -134,6 +136,7 @@ public extension FixedSizeCollection {
 //    mutating
 //    func withUnsafeMutableBufferPointer<ResultType>(body: (UnsafeMutableBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
 //        try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
+              //Think this is the line that breaks it.
 //            var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
 //            return try elementPointer.withUnsafeMutableBufferPointer { bufferPointer in
 //                return try body(bufferPointer)
