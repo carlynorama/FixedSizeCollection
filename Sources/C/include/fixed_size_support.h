@@ -29,13 +29,13 @@ void acknowledge_uint8_buffer(const uint8_t* array, const size_t n);
 void erased_tuple_receiver(const int* values, const size_t n);
 
 //-------------------------------------------------- datagrams sensor
-typedef struct Sensor_t {
-  char name[256];
-  int valuesCount;
-  double values[8192];
-} Sensor_t;
-
-void readSensor(Sensor_t* sensor);
-void writeSensor(Sensor_t* sensor);
+//typedef struct Sensor_t {
+//  char name[256];
+//  int valuesCount;
+//  double values[8192];
+//} Sensor_t;
+//
+//void readSensor(Sensor_t* sensor);
+//void writeSensor(Sensor_t* sensor);
 
 #endif /* fixed_size_support_c_h */

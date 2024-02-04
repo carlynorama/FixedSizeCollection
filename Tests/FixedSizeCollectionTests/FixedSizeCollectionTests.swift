@@ -57,7 +57,7 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     //Better way to test C? 
-    func testCPrint() {
-        FixedSizeCollection.basicPrint()
+    func testCPrint() throws {
+        try FixedSizeCollection<CInt>.basicPrint()
     }
 }
