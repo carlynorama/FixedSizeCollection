@@ -6,22 +6,38 @@
     - see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
     - [ ] coerce it to and from an equivalent tuple form using "as" ?
     - [ ] looking for zeroed memory vs zero value possible?
+    - Misc Options from the post
+        - importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array,
+        - conditionalizing the behavior on language version mode, so that Swift 6 code sees the imported field in its array form.
 - [ ] proto get and set subscripts already done
 - [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
+- [ ] when [unchecked:] becomes a thing, use it by default.
 - [ ] a safe insert that will do bounds checking
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
+- [ ] matrix[0][24] style init
+- [ ] matrix access
+- [ ] variadic inits
 
 
-## Repo Meta
+## Repo Meta / General Research Q's 
 - [ ] add linter plugin
 - [ ] the badges / swift level info
 - [ ] platform info in Package.swift
+- [ ] in a package manager how to have a per file target inclusion? (testing functions)
 - [ ] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up.
-
+- [ ] default is a keyword, is there a better label 
+- [ ] Iterators and Stream, what comes with Random Access Collection? 
+- [ ] SIL Builtins,  @inline(always), @alwaysEmitIntoClient for making Matrix type (https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/9)
+- [ ] [Cxx too?](
+    - [] [Which Types](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/19)?(CXType_ConstantArray, CXType_Vector, CXType_IncompleteArray, CXType_VariableArray, CXType_DependentSizedArray)
+    - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
+- [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
 
 
 
 ## C interop targets
+
+[SysEx messages in CoreMIDI](SysEx messages in CoreMIDI)
 
 From: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
 Looked reasonable. See Color example in UnsafeExplorer.
