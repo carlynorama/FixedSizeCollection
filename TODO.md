@@ -1,43 +1,88 @@
 # Wishlist & TODOs
 
 
-## Specs
-- [ ] Must work well with C tuples 
-    - see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
-    - [ ] coerce it to and from an equivalent tuple form using "as" ?
-    - [ ] looking for zeroed memory vs zero value possible?
-    - Misc Options from the post
-        - importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array,
-        - conditionalizing the behavior on language version mode, so that Swift 6 code sees the imported field in its array form.
-- [ ] proto get and set subscripts already done
-- [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
-- [ ] when [unchecked:] becomes a thing, use it by default.
-- [ ] a safe insert that will do bounds checking
+
+## Proto Specs
+
+A done in this context means initial interface, no assurance on quality of implementations yet.  
+
+
+- [ ] Must work well with C
+    - [ ] examples from C interop section
+        - [ ] make [nonmutable inout prefix](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1), please. to compliment mutable gotten from &
+    - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
+    - [ ] ?? looking for zeros / default value as nil?
+    - [ ] pass an individual Element or slice to a C function.
+    - [ ] FixedSizeCollection(copyOf: TypedPointer, count:N)
+    - [ ]
+    - [ ] ?? Misc Options from the post
+        - [ ] ?? importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array?
+        - - [ ] ?? behavior based on language version mode, so that Swift 6 code sees the imported field in its array form?
+- [ ] If called a Collection it should match Collection preconceptions as much as possible. 
+    - [ ] proto get and set subscripts already done, but don't have bounds checking and subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
+        - [ x ] subscript check function
+            - [ ] what kind of fatal error should that be? 
+        - [ x ] get individual
+        - [ x ] set individual
+        - [ x ] test individual [x] get, [x] set
+        - [ ~ ] get bounds (have a version that return Self, not subsequence and that messes up Collection conformance. Hold off.)
+        - [ ] set bounds
+        - [ ] test bounds [ ] get [ ] set
+    - [ ] when [unchecked:] becomes a thing, implement it, but in the mean time an unsafe insert that will skip bounds checking. `.gunc(at: )`, `.sunc(at:)`
+        - [x] proto gunc
+        - [x] proto sunc
+        - [ ] tests [ ] gunc [ ] sunc
+    - [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
+    - [ ] variadic inits
+    - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?
+        - [ ] get subsequence range, @inlinable and self.defaultValue ans SubSequence
+    - pointer prefix sugar
+        - [ ] & returns mutable pointer like Collection
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
-- [ ] matrix[0][24] style init
+- [ ] matrix[0][24] style init of some format
 - [ ] matrix access
-- [ ] variadic inits
 
 
-## Repo Meta / General Research Q's 
-- [ ] add linter plugin
+## Documentation
+
+### inline
+- [ ] all of it
+
+### reference
+- [ ] all of it
 - [ ] the badges / swift level info
+- [ ] make README more like normal readme. Add context in to different doc
+
+### meta
+- [ ] Split this TODO into separate files
+
+## Testing Meta & Misc
+-  ~~ [ ] in a package manager how to have a per file target inclusion? (testing functions) ~~
+- [x] separate testing code C and Swift Bridge for testing code C into own targets 
+    - [ ] is this best approach for using C (C++?) with XCTest
+
+## Repo Meta
+- [ ] add linter plugin
 - [ ] platform info in Package.swift
-- [ ] in a package manager how to have a per file target inclusion? (testing functions)
+
+## Misc & General Research Q's 
 - [ ] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up.
 - [ ] default is a keyword, is there a better label 
 - [ ] Iterators and Stream, what comes with Random Access Collection? 
 - [ ] SIL Builtins,  @inline(always), @alwaysEmitIntoClient for making Matrix type (https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/9)
-- [ ] [Cxx too?](
+- [ ] [Cxx too?]
     - [] [Which Types](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/19)?(CXType_ConstantArray, CXType_Vector, CXType_IncompleteArray, CXType_VariableArray, CXType_DependentSizedArray)
     - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
 - [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
 
 
-
 ## C interop targets
 
-[SysEx messages in CoreMIDI](SysEx messages in CoreMIDI)
+- see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
+
+- [ ] [nonmutable inout](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1), please.
+
+[SysEx messages in CoreMIDI](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25)
 
 From: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
 Looked reasonable. See Color example in UnsafeExplorer.

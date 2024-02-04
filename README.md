@@ -1,31 +1,13 @@
 # FixedSizeCollection
 
-
-
-## References
-- Motivation Forum Post: https://forums.swift.org/t/approaches-for-fixed-size-arrays/
-- Previous Pitch: https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023
-
-### Related Proposals
-- https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
-- https://github.com/apple/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md
-
-### Code that does similar or related things
-- https://github.com/search?q=org%3AApple%20Data&type=code
-- https://github.com/search?q=org%3AApple+withCString&type=code
-- https://github.com/apple/swift/blob/main/stdlib/public/core/StaticString.swift#L72
-- https://github.com/apple/swift-corelibs-libdispatch/blob/bb1cb6afb589e911cd808cb98e03d54603b14e16/src/swift/Data.swift#L16
-- https://github.com/apple/swift-collections
-- https://github.com/apple/swift-algorithms
-- https://github.com/karwa/swift-url/blob/f4a66a7645ab40a814fae838f33cf346bb726a3d/Sources/WebURL/Util/Pointers.swift#L324
-- https://forums.swift.org/t/a-large-fixed-width-integer-swift-package/62743
-- https://github.com/carlynorama/UnsafeWrapCSampler
-- https://github.com/carlynorama/UnsafeExplorer
+See  https://forums.swift.org/t/approaches-for-fixed-size-arrays/
+- Previous Pitch: https://forums.swift.org/t/
 
 ## Major Use Cases
 
 - Interfacing with C
 - Speed.
+    - "guaranteed stack" 
     - Scratch Buffers Audio
     - Scratch Buffers Graphics
 - ??? 
@@ -34,7 +16,7 @@
 
 Specs are in [TODO.md](TODO.md)
 
-## Inits
+## Inits this Implementation
 
 ### Currently Implemented
 
@@ -44,7 +26,29 @@ Specs are in [TODO.md](TODO.md)
     init(dataBlob: Data, as: Element.Type)
 ```
 
-### Inits of types from other languages
+### Under Consideration
+
+#### For working with C
+
+```
+FixedSizeCollection(copyOf: TypedPointer, count:N)
+
+```
+
+Possible: 
+
+```
+FixedSizeCollection(viewOf: TypedPointer, count:N)
+```
+
+But is that inherently an Unsafe type? How can swift lock the underlying storage if in a C or C++ library. And if can't, how to signal to client without making an UnsafeFixedSizeCollection type? Or, fundamentally, is that this type? 
+
+
+## Sugar and Spellings
+
+This implementation does not take a strong opinion as to what the final sugar should be. 
+
+### Examples from other languages
 
 [Benchmark repo](https://github.com/jabbalaci/SpeedTests) 
 ```text
@@ -71,24 +75,33 @@ Scheme:
                 (loop (+ i 1))))))))
 ```
 
-### Ideas from Thread
+### This Implementation
 
-What to do about default value. There has to be one for this implementation. Should be an init that lets the client pick it. Nil. 0?. 
+No init sugar implemented but this implementation would support easily
 
 ```swift
-//What I'm working on. Can't do the [Int] part, but can do the FSC<>() part
 var myArray:[Int](10)
 var myArray:[Int](10, default:Int) //and longer, "size:" is a ? 
-var myArray:[Int]([10,10], default) // for matrix inits. 
+var myArray:[Int]([10,10], default:...) // TODO. for matrix inits. 
 ```
 
-What the actually sugar looks like - TBD. Lots of ideas in the thread
+### For view-only type
 
-For view-only type
 ```
 @FixedSizeArray(count: 512) var buffer: BufferView<UInt8> 
 @FixedSizeArray<Int>(count: 512) var buffer
+
 ```
+Also closure? 
+
+```
+myExistingArrayOrArraySlice.withFixedMemory { fixedCollection in
+    //Do my thing in
+}
+```
+
+
+### Storage Backed
 
 Others suggested, presumably with the idea of allocated memory behind them. [But maybe not](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/30)
 
@@ -104,14 +117,18 @@ var myArray:Int[_] = [1,2,3] for derived fixed size.
 
 ## Backing Memory: `Data`? Really?
 
-No, not really, but it's easy for prototyping and will keep me from dropping into C or C++, which I am assuming is undesired.
+No, not really really for the final implementation, but it's easy for prototyping and will limit the temptation to make a novel C or C++ backing type (prematurely?). By storing it as Data the implementation can practice accessing raw data which maximizes flexibility for future implementation decisions. 
 
-There are pros and cons to every underlying memory choice. One main thrust of the motivating forum post is that a Fixed Array could be a property wrapper instantiating a view on an exiting type. It seems to be like JavaScript's Object.freeze/Object.seal while the fixed sized array is in use.  
+There are pros and cons to every underlying memory choice. One main thrust of the motivating forum post is that a Fixed Array could be a property wrapper instantiating a view on an exiting type. There seem to be similarities to JavaScript's [Object.freeze][js_obj_fr]/[Object.seal][js_obj_sl] while the fixed sized array is in use.  
 
-This is a harder task to get correct and a lot of API considerations can be worked out using the easier path. Open to pull requests that do better. One concern was would it let indirect holding of a struct inside itself. 
+[js_obj_fr]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
+[js_obj_sl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal
 
-Example underlying storage idea by Joe_Groff. 
-//https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/33
+This is a harder task to get correct and a lot of API considerations can be worked out using the "easier" storage backed path. One concern was that a view only type would it lead indirect holding of a struct inside itself. 
+
+Also, it may make sense to have differing memory backings available like some other collections offer (contigous or not, etc) 
+
+[Example view based suggestion by Joe_Groff](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/33):
 
 ```swift
 @moveonly
@@ -135,13 +152,37 @@ struct SmallArray<capacity: Int, T> {
 }
 ```
 
-This repo's implementation needs for count to be a let and all underlying be allocated to someone (in this case, a "dataBlob" with at least a default value. Append can't happen, the memory, whoever owns it, must exist. This is to maximize compatibility with C structures, which may not be the community's ultimate highest goal. TBD. This will allow for inserts that have a similar API to Set, perhaps, (especially if the Element type is an Optional) where the insert can find its way to the first available nil or perhaps default value. 
+This repo's implementation needs for count to be a let and all underlying values to be allocated to a "_storage" value with at least a default value. Append can't happen, the memory, whoever owns it, must exist by then end of the init. This is to maximize compatibility with C structures, which may not be the community's ultimate highest goal. TBD. While append might not make sense in this context, an `insert` with a similar API to Set, perhaps, (especially if the Element type is an Optional) where the `insert` can find its way to the first available nil or perhaps default value. 
 
 Previous underlying storage concern: 
 
-> Lastly, I think that at the same time fixed-size arrays with inline storage are introduced, there should also be a fixed-size array type with out-of-line storage which should be slightly easier to reach for. Without an out-of-line-storage alternative, I predict that we'll see a lot of people have gigantic fixed-size arrays of gigantic types in their structs without realizing how much overhead they incur. - fclout
+> Lastly, I think that at the same time fixed-size arrays with inline storage are introduced, there should also be a fixed-size array type with out-of-line storage which should be slightly easier to reach for. Without an out-of-line-storage alternative, I predict that we'll see a lot of people have gigantic fixed-size arrays of gigantic types in their structs without realizing how much overhead they incur. - [fclout](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/46)
 
-https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/46
+Tuples as the backing memory have been floated and rejected.  The feel on the street appears to be that this would come with too much baggage and the only reason it's been suggested is because that's what the C currently gets mapped to. 
 
 
-Another could be to just use a tuple as the backing memory.
+## References
+
+- Motivating Forum Post: https://forums.swift.org/t/approaches-for-fixed-size-arrays/
+- Previous Pitch: https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023
+
+### Related Proposals
+- https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
+- https://github.com/apple/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md
+
+### Code that does similar or related things
+
+- [Array](https://github.com/apple/swift/blob/2fa1022a912a1c07db2a3596d494adb35a28b5f3/stdlib/public/core/Array.swift)
+- [Collection](https://github.com/apple/swift/blob/2fa1022a912a1c07db2a3596d494adb35a28b5f3/stdlib/public/core/Collection.swift)
+
+- https://github.com/search?q=org%3AApple%20Data&type=code
+- https://github.com/search?q=org%3AApple+withCString&type=code
+- https://github.com/apple/swift/blob/main/stdlib/public/core/StaticString.swift#L72
+- https://github.com/apple/swift-corelibs-libdispatch/blob/bb1cb6afb589e911cd808cb98e03d54603b14e16/src/swift/Data.swift#L16
+- https://github.com/apple/swift-collections
+- https://github.com/apple/swift-algorithms
+- https://github.com/karwa/swift-url/blob/f4a66a7645ab40a814fae838f33cf346bb726a3d/Sources/WebURL/Util/Pointers.swift#L324
+- https://forums.swift.org/t/a-large-fixed-width-integer-swift-package/62743
+- 25:52 of WWDC 2020 [Safely Manage Pointers in Swift](https://developer.apple.com/wwdc20/10167)
+- https://github.com/carlynorama/UnsafeWrapCSampler
+- https://github.com/carlynorama/UnsafeExplorer
