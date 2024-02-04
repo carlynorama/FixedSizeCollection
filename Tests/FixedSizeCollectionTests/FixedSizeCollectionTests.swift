@@ -10,7 +10,7 @@ import XCTest
 
 final class FixedSizeCollectionTests: XCTestCase {
     func testBasicInitWithDefault() {
-        let testCollection = FixedSizeCollection(4, default: 12) { [1, 2, 3] }
+        let testCollection = FixedSizeCollection(4, defaultsTo: 12) { [1, 2, 3] }
         XCTAssertEqual(testCollection[0], 1, "collection 0 incorrect")
         XCTAssertEqual(testCollection[1], 2, "collection 1 incorrect")
         XCTAssertEqual(testCollection[2], 3, "collection 2 incorrect")
@@ -19,7 +19,7 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     func testBasicInitWithOptional() {
-        let testCollection = FixedSizeCollection<Int?>(5, default: nil) { [1, 2, 3] }
+        let testCollection = FixedSizeCollection<Int?>(5, defaultsTo: nil) { [1, 2, 3] }
         XCTAssertEqual(testCollection[0], 1, "collection 0 incorrect")
         XCTAssertEqual(testCollection[1], 2, "collection 1 incorrect")
         XCTAssertEqual(testCollection[2], 3, "collection 2 incorrect")
@@ -29,7 +29,17 @@ final class FixedSizeCollectionTests: XCTestCase {
     
     func testAccess() {
         let baseArray = [1, 2, 3, 7]
-        let testCollection = FixedSizeCollection<Int?>(baseArray.count, default: nil) { baseArray }
+        let testCollection = FixedSizeCollection<Int?>(baseArray.count, defaultsTo: nil) { baseArray }
+        measure {
+            for i in 0..<testCollection.count {
+                XCTAssertEqual(testCollection[i], baseArray[i], "collection did not retrieve expected value")
+            }
+        }
+    }
+    
+    func testAccess() {
+        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        let testCollection = FixedSizeCollection<Int>(baseArray.count) { baseArray }
         measure {
             for i in 0..<testCollection.count {
                 XCTAssertEqual(testCollection[i], baseArray[i], "collection did not retrieve expected value")
@@ -38,7 +48,7 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     func testUpdate() {
-        var testCollection = FixedSizeCollection<Int>(5, default: 0)
+        var testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
         measure {
             for i in 0..<testCollection.count {
                 let newVar = Int.random(in: 0...100)
@@ -49,7 +59,7 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     func testUpdateForEach() {
-        let testCollection = FixedSizeCollection<Int>(5, default: 0)
+        let testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
         measure {
             testCollection.forEach {
                 XCTAssertEqual($0, 0, "collection did not retrieve expected value")

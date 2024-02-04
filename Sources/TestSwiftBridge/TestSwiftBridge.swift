@@ -20,7 +20,7 @@ extension FixedSizeCollection {
     
     //TODO: Try to fix &fsc, (ignore direct data access.)
     //static func basicPrint() throws {
-        //var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        //var testCollection = FixedSizeCollection<Int32>(5, defaultsTo: 5)
         
         //TODO: I would like for this to work. override the prefix how?
         //error: cannot convert value of type 'UnsafeMutablePointer<FixedSizeCollection<Int32>>' to expected argument type 'UnsafeMutablePointer<Int32>'
@@ -32,7 +32,7 @@ extension FixedSizeCollection {
     //}
     
     static func rawBufferPointerPrint() throws {
-        let testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        let testCollection = FixedSizeCollection<Int32>(5, defaultsTo: 5)
         //Swift Type: 'UnsafeRawBufferPointer'
         //C func: void (const void*, const size_t)
         try testCollection.withUnsafeBytes { rawBufferPointer in
@@ -41,7 +41,7 @@ extension FixedSizeCollection {
     }
     
     static func mutableRawBufferPointerPrint() throws {
-        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        var testCollection = FixedSizeCollection<Int32>(5, defaultsTo: 5)
         //Swift Type:  'UnsafeMutableRawBufferPointer'
         //C func: void (void*, const size_t )
         try testCollection.withUnsafeMutableBytes { rawBufferPointer in
@@ -53,7 +53,7 @@ extension FixedSizeCollection {
     //--------------------------------------------------------------------
     //error: Exited with signal code 11
     static func boundBufferPointerPrint() throws {
-        let testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        let testCollection = FixedSizeCollection<Int32>(5, defaultsTo: 5)
         //Swift Type:  'UnsafeBufferPointer<Int32>'
         //C func: void (const int*, const size_t)
         try testCollection.withUnsafeBufferPointer { bufferPointer in
@@ -65,7 +65,7 @@ extension FixedSizeCollection {
     
     //Safest way to handle this is with the buffer pointer.
     static func boundMutableBufferPointerPrint() throws {
-        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        var testCollection = FixedSizeCollection<Int32>(5, defaultsTo: 5)
         //Swift Type:  'UnsafeMutableBufferPointer<Int32>'
         //C func: void (int*, const size_t)
         try testCollection.withUnsafeMutableBufferPointer { bufferPointer in
@@ -77,7 +77,7 @@ extension FixedSizeCollection {
 
     //but if really want just the pointer
     static func boundPointerPrint() throws {
-        let testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        let testCollection = FixedSizeCollection<Int32>(5, defaultsTo: 5)
         let tmp_count = testCollection.count
         //Swift Type:  'UnsafePointer<Int32>'
         //C func: void (cont int*, const size_t)
@@ -89,7 +89,7 @@ extension FixedSizeCollection {
     }
     
     static func boundMutablePointerPrint() throws {
-        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+        var testCollection = FixedSizeCollection<Int32>(5, defaultsTo: 5)
         let tmp_count = testCollection.count
         //Swift Type:  'UnsafePointer<Int32>'
         //C func: void (int*, const size_t)

@@ -17,8 +17,13 @@ public struct FixedSizeCollection<Element> : RandomAccessCollection {
     public var startIndex: Int { 0 }
     public var endIndex: Int { count }
     
-    //MAY GO AWAY.
-    let defaultValue:Element? //TODO: if Element:Optional
+    //MAY GO AWAY!!!
+    //TODO: make Optional? Complicates Element:Optional
+    //- for use in pulling in arrays from C where 0 may need to be nil
+    //- or inserts to replace append where "next available spot that == default" might be handy.
+    //- or "nil out this value" when communicating with a language that doesn't have nil.
+    //But not everyone may need those functions.
+    let _defaultValue:Element
     
     //What is the best storage type?
     
@@ -31,16 +36,12 @@ public struct FixedSizeCollection<Element> : RandomAccessCollection {
         loadFixedSizeCArray(source: _storage, ofType: Element.self) ?? []
     }
     
-
-    
-
-    
 }
 //MARK: Inits
 public extension FixedSizeCollection {
-    init(_ count:Int, default d:Element, initializer:() -> [Element] = { [] }) {
+    init(_ count:Int, defaultsTo d:Element, initializer:() -> [Element] = { [] }) {
         self.count = count
-        self.defaultValue = d
+        self._defaultValue = d
         var result = initializer().prefix(count)
         //if result.count > count { return nil }
         for _ in 0...(count - result.count) {
@@ -51,8 +52,8 @@ public extension FixedSizeCollection {
         }
     }
     
-    init(default d:Element? = nil, initializer:() -> [Element]) {
-        self.defaultValue = d
+    init(defaultsTo d:Element, initializer:() -> [Element]) {
+        self._defaultValue = d
         var tmp = initializer()
         self._storage = tmp.withUnsafeMutableBufferPointer { pointer in
             Data(buffer: pointer)
@@ -65,8 +66,8 @@ public extension FixedSizeCollection {
         }
     }
     
-    init(dataBlob: Data, as: Element.Type, default d:Element? = nil) {
-        self.defaultValue = d
+    init(dataBlob: Data, as: Element.Type, defaultsTo d:Element) {
+        self._defaultValue = d
         self._storage = dataBlob
         self.count = dataBlob.withUnsafeBytes { bytes in
             let tmpCount = bytes.count / MemoryLayout<Element>.stride

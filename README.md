@@ -1,5 +1,7 @@
 # FixedSizeCollection
 
+See  https://forums.swift.org/t/approaches-for-fixed-size-arrays/
+- Previous Pitch: https://forums.swift.org/t/
 
 ## Major Use Cases
 
@@ -14,7 +16,7 @@
 
 Specs are in [TODO.md](TODO.md)
 
-## Inits
+## Inits this Implementation
 
 ### Currently Implemented
 
@@ -24,9 +26,27 @@ Specs are in [TODO.md](TODO.md)
     init(dataBlob: Data, as: Element.Type)
 ```
 
+### Under Consideration
+
+#### For working with C
+
+```
+FixedSizeCollection(copyOf: TypedPointer, count:N)
+
+```
+
+Possible: 
+
+```
+FixedSizeCollection(viewOf: TypedPointer, count:N)
+```
+
+But is that inherently an Unsafe type? How can swift lock the underlying storage if in a C or C++ library. And if can't, how to signal to client without making an UnsafeFixedSizeCollection type? Or, fundamentally, is that this type? 
+
+
 ## Sugar and Spellings
 
-This implementation does not take a stron opinion as to what the final sugar should be. 
+This implementation does not take a strong opinion as to what the final sugar should be. 
 
 ### Examples from other languages
 
@@ -62,7 +82,7 @@ No init sugar implemented but this implementation would support easily
 ```swift
 var myArray:[Int](10)
 var myArray:[Int](10, default:Int) //and longer, "size:" is a ? 
-var myArray:[Int]([10,10], default) // for matrix inits. 
+var myArray:[Int]([10,10], default:...) // TODO. for matrix inits. 
 ```
 
 ### For view-only type
@@ -72,17 +92,16 @@ var myArray:[Int]([10,10], default) // for matrix inits.
 @FixedSizeArray<Int>(count: 512) var buffer
 
 ```
-
-Would also like to consider 
+Also closure? 
 
 ```
-myExistingArray.withFixedMemoryAlloc { fixedCollection in
+myExistingArrayOrArraySlice.withFixedMemory { fixedCollection in
     //Do my thing in
 }
 ```
 
 
-
+### Storage Backed
 
 Others suggested, presumably with the idea of allocated memory behind them. [But maybe not](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/30)
 
@@ -98,14 +117,14 @@ var myArray:Int[_] = [1,2,3] for derived fixed size.
 
 ## Backing Memory: `Data`? Really?
 
-No, not really really for the final implementation, but it's easy for prototyping and will limit the temptation to make a novel C or C++ backing type (prematurely?).
+No, not really really for the final implementation, but it's easy for prototyping and will limit the temptation to make a novel C or C++ backing type (prematurely?). By storing it as Data the implementation can practice accessing raw data which maximizes flexibility for future implementation decisions. 
 
-There are pros and cons to every underlying memory choice. One main thrust of the motivating forum post is that a Fixed Array could be a property wrapper instantiating a view on an exiting type. There seem to be similarities to JavaScript's Object.freeze/Object.seal while the fixed sized array is in use.  
+There are pros and cons to every underlying memory choice. One main thrust of the motivating forum post is that a Fixed Array could be a property wrapper instantiating a view on an exiting type. There seem to be similarities to JavaScript's [Object.freeze][js_obj_fr]/[Object.seal][js_obj_sl] while the fixed sized array is in use.  
 
 [js_obj_fr]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
 [js_obj_sl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal
 
-This is a harder task to get correct and a lot of API considerations can be worked out using the easier path. Open to pull requests that do better. One concern was that a view only type would it lead indirect holding of a struct inside itself. 
+This is a harder task to get correct and a lot of API considerations can be worked out using the "easier" storage backed path. One concern was that a view only type would it lead indirect holding of a struct inside itself. 
 
 Also, it may make sense to have differing memory backings available like some other collections offer (contigous or not, etc) 
 
@@ -133,19 +152,17 @@ struct SmallArray<capacity: Int, T> {
 }
 ```
 
-This repo's implementation needs for count to be a let and all underlying values to be allocated (to someone! in this case, a "_storage" with at least a default value. Append can't happen, the memory, whoever owns it, must exist. This is to maximize compatibility with C structures, which may not be the community's ultimate highest goal. TBD. While append might not make sense in this context, this will allow for inserts that have a similar API to Set, perhaps, (especially if the Element type is an Optional) where the insert can find its way to the first available nil or perhaps default value. 
+This repo's implementation needs for count to be a let and all underlying values to be allocated to a "_storage" value with at least a default value. Append can't happen, the memory, whoever owns it, must exist by then end of the init. This is to maximize compatibility with C structures, which may not be the community's ultimate highest goal. TBD. While append might not make sense in this context, an `insert` with a similar API to Set, perhaps, (especially if the Element type is an Optional) where the `insert` can find its way to the first available nil or perhaps default value. 
 
 Previous underlying storage concern: 
 
-> Lastly, I think that at the same time fixed-size arrays with inline storage are introduced, there should also be a fixed-size array type with out-of-line storage which should be slightly easier to reach for. Without an out-of-line-storage alternative, I predict that we'll see a lot of people have gigantic fixed-size arrays of gigantic types in their structs without realizing how much overhead they incur. - fclout
+> Lastly, I think that at the same time fixed-size arrays with inline storage are introduced, there should also be a fixed-size array type with out-of-line storage which should be slightly easier to reach for. Without an out-of-line-storage alternative, I predict that we'll see a lot of people have gigantic fixed-size arrays of gigantic types in their structs without realizing how much overhead they incur. - [fclout](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/46)
 
-https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/46
-
-
-Another could be to just use a tuple as the backing memory. The feel on the street apears to be that this would come with too much baggage.
+Tuples as the backing memory have been floated and rejected.  The feel on the street appears to be that this would come with too much baggage and the only reason it's been suggested is because that's what the C currently gets mapped to. 
 
 
 ## References
+
 - Motivating Forum Post: https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 - Previous Pitch: https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023
 
