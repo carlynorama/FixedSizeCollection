@@ -18,12 +18,13 @@ public struct FixedSizeCollection<Element> : RandomAccessCollection {
     public var endIndex: Int { count }
     
     //MAY GO AWAY!!!
-    //TODO: make Optional? Complicates Element:Optional
+    //TODO: Double Optional Possible
     //- for use in pulling in arrays from C where 0 may need to be nil
     //- or inserts to replace append where "next available spot that == default" might be handy.
     //- or "nil out this value" when communicating with a language that doesn't have nil.
-    //But not everyone may need those functions.
-    let _defaultValue:Element
+    //But not everyone may need those functions, and if you don't having to set it is annoying.
+    //Don't love this. Could be required on those functions and initializers instead.
+    let _defaultValue:Element?
     
     //What is the best storage type?
     
@@ -52,7 +53,7 @@ public extension FixedSizeCollection {
         }
     }
     
-    init(defaultsTo d:Element, initializer:() -> [Element]) {
+    init(defaultsTo d:Element? = nil, initializer:() -> [Element]) {
         self._defaultValue = d
         var tmp = initializer()
         self._storage = tmp.withUnsafeMutableBufferPointer { pointer in
@@ -66,7 +67,7 @@ public extension FixedSizeCollection {
         }
     }
     
-    init(dataBlob: Data, as: Element.Type, defaultsTo d:Element) {
+    init(dataBlob: Data, as: Element.Type, defaultsTo d:Element? = nil) {
         self._defaultValue = d
         self._storage = dataBlob
         self.count = dataBlob.withUnsafeBytes { bytes in

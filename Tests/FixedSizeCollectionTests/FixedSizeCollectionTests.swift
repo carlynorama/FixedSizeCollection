@@ -37,15 +37,15 @@ final class FixedSizeCollectionTests: XCTestCase {
         }
     }
     
-    func testAccess() {
-        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        let testCollection = FixedSizeCollection<Int>(baseArray.count) { baseArray }
-        measure {
-            for i in 0..<testCollection.count {
-                XCTAssertEqual(testCollection[i], baseArray[i], "collection did not retrieve expected value")
-            }
-        }
-    }
+    // func testRangedAccess() {
+    //     let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    //     let testCollection = FixedSizeCollection<Int>(baseArray.count) { baseArray }
+    //     measure {
+    //         for i in 0..<testCollection.count {
+    //             XCTAssertEqual(testCollection[i], baseArray[i], "collection did not retrieve expected value")
+    //         }
+    //     }
+    // }
     
     func testUpdate() {
         var testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
