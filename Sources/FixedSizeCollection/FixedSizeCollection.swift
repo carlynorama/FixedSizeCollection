@@ -1,17 +1,18 @@
 //
-//  FixedWidth.swift
+//  FixedSizeCollection.swift
 //  TestingTwo
 //
 //  Created by Carlyn Maw on 2/2/24.
-//  Inspired by 25:52 of WWDC 2020 "Safely Manage Pointers in Swift."
 
-// In the subscript, using .load(fromByteOffset:as) prevents rebinding of memory for access. This struct can point to memory bound as a different type without overriding.
 
 import Foundation
 
 //Unresolved. Should perhaps be N:Int in the generic.
 public struct FixedSizeCollection<Element> : RandomAccessCollection {
     public typealias N = Int
+    public typealias _Storage = Data
+    //TODO: buffer vs storage in Array vs Collection semantics
+    
     public let count:N   //Unresolved. Int, UInt, CInt... For now starting with Int.
     public var startIndex: Int { 0 }
     public var endIndex: Int { count }
@@ -20,12 +21,17 @@ public struct FixedSizeCollection<Element> : RandomAccessCollection {
     let defaultValue:Element? //TODO: if Element:Optional
     
     //What is the best storage type?
-    //Data good for prototyping
-    private var dataBlob:Data
     
-    private var memSizeFull:N {  MemoryLayout<Element>.size * count }
-    private var memSizeElem:N {  MemoryLayout<Element>.size }
-    private func offsetSize(itemCount:N) -> N { MemoryLayout<Element>.size * itemCount }
+    //Data good for prototyping
+    @usableFromInline
+    internal var _storage:_Storage
+    
+    //TODO: Believe this is copy,copy not COW?
+    var all:[Element] {
+        loadFixedSizeCArray(source: _storage, ofType: Element.self) ?? []
+    }
+    
+
     
 
     
@@ -40,7 +46,7 @@ public extension FixedSizeCollection {
         for _ in 0...(count - result.count) {
             result.append(d)
         }
-        self.dataBlob = result.withUnsafeMutableBufferPointer { pointer in
+        self._storage = result.withUnsafeMutableBufferPointer { pointer in
             Data(buffer: pointer)
         }
     }
@@ -48,10 +54,10 @@ public extension FixedSizeCollection {
     init(default d:Element? = nil, initializer:() -> [Element]) {
         self.defaultValue = d
         var tmp = initializer()
-        self.dataBlob = tmp.withUnsafeMutableBufferPointer { pointer in
+        self._storage = tmp.withUnsafeMutableBufferPointer { pointer in
             Data(buffer: pointer)
         }
-        self.count = dataBlob.withUnsafeBytes { bytes in
+        self.count = _storage.withUnsafeBytes { bytes in
             let tmpCount = bytes.count / MemoryLayout<Element>.stride
             precondition(tmpCount * MemoryLayout<Element>.stride == bytes.count)
             precondition(Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Element>.alignment))
@@ -61,7 +67,7 @@ public extension FixedSizeCollection {
     
     init(dataBlob: Data, as: Element.Type, default d:Element? = nil) {
         self.defaultValue = d
-        self.dataBlob = dataBlob
+        self._storage = dataBlob
         self.count = dataBlob.withUnsafeBytes { bytes in
             let tmpCount = bytes.count / MemoryLayout<Element>.stride
             precondition(tmpCount * MemoryLayout<Element>.stride == bytes.count)
@@ -69,6 +75,7 @@ public extension FixedSizeCollection {
             return tmpCount
         }
     }
+
     
     //TODO: Initialize/Factory method COPY that works well retrieving copy of C array
     /*
@@ -85,83 +92,40 @@ public extension FixedSizeCollection {
      */
 }
 
-//MARK: Access
-public extension FixedSizeCollection {
-    subscript(position: Int) -> Element {
-        get {
-            dataBlob.withUnsafeBytes { rawPointer in
-                let bufferPointer = rawPointer.assumingMemoryBound(to: Element.self)
-                return bufferPointer[position]
-            }
-        }
-        set {
-            let startIndex = dataBlob.startIndex + position * MemoryLayout<Element>.stride
-            let endIndex = startIndex + MemoryLayout<Element>.stride
-            Swift.withUnsafePointer(to: newValue) { sourceValuePointer in
-                dataBlob.replaceSubrange(startIndex..<endIndex, with: sourceValuePointer, count: MemoryLayout<Element>.stride)
-            }
-        }
+//TODO: What is a DependenceToken (as seen in Array)
+extension FixedSizeCollection {
+    
+    @inlinable
+    internal func _checkSubscript(_ position:N) -> Bool {
+        //TODO: Okay to depend on Range or, Nah. Can't do for Range(Range)
+        (0..<count).contains(position)
     }
     
-    //TODO: Believe this is copy,copy not COW.
-    var all:[Element] {
-        loadFixedSizeCArray(source: dataBlob, ofType: Element.self) ?? []
-    }
-    
-    //MARK: Unsafe
-    //------------------------------------------------ RAW
-    //-------- Anything Data does...
-    func withUnsafeBytes<ResultType>(body: (UnsafeRawBufferPointer) throws -> ResultType) throws -> ResultType {
-        try dataBlob.withUnsafeBytes(body)
-    }
-    
-    mutating
-    func withUnsafeMutableBytes<ResultType>(body: (UnsafeMutableRawBufferPointer) throws -> ResultType) throws -> ResultType {
-        try dataBlob.withUnsafeMutableBytes(body)
-    }
-    
-    //----------------------------------- Bound to Element
-    func withUnsafeBufferPointer<ResultType>(body: (UnsafeBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
-        return try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
-            //Think this might be okay in this context.
-            //declared an element pointer works, but gets freed prematurely.
-            //var elementPointer = unsafeMutableRawBufferPointer.load(as: [Element].self)
-            return try unsafeRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
-                return try body(bufferPointer)
-            }
-        }
-    }
-    
-    mutating
-    func withUnsafeMutableBufferPointer<ResultType>(body: (UnsafeMutableBufferPointer<Element>?) throws -> ResultType) throws -> ResultType {
-        try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
-            return try unsafeMutableRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
-                return try body(bufferPointer)
-            }
-        }
-    }
-    
-    func withUnsafePointer<ResultType>(body: (UnsafePointer<Element>?) throws -> ResultType) throws -> ResultType {
-        return try dataBlob.withUnsafeBytes { unsafeRawBufferPointer in
-            return try unsafeRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
-                return try body(bufferPointer.baseAddress)
-            }
-        }
-    }
-    
-
-    mutating
-    func withUnsafeMutablePointer<ResultType>(body: (UnsafeMutablePointer<Element>?) throws -> ResultType) throws -> ResultType {
-        return try dataBlob.withUnsafeMutableBytes { unsafeMutableRawBufferPointer in
-            return try unsafeMutableRawBufferPointer.withMemoryRebound(to: Element.self) { bufferPointer in
-                return try body(bufferPointer.baseAddress)
-            }
-        }
-    }
 }
+
 
 //MARK: Helpers
 extension FixedSizeCollection {
+    
+    //TODO: To cache or not to cache
+    @inlinable
+    internal var _mStrideFull:N {  MemoryLayout<Element>.stride * count }
+    
+    @inlinable
+    internal var _mStrideElem:N {  MemoryLayout<Element>.stride }
+    
+    @inlinable
+    internal func _offsetStride(itemCount:N) -> N { MemoryLayout<Element>.stride * itemCount }
+    
+    @inlinable
+    internal var _mSizeFull:N {  MemoryLayout<Element>.size * count }
+    
+    @inlinable
+    internal var _mSizeElem:N {  MemoryLayout<Element>.size }
+    
+    @inlinable
+    internal func _offsetSize(itemCount:N) -> N { MemoryLayout<Element>.size * itemCount }
+    
     //Okay to use assumingMemoryBound here IF using type ACTUALLY bound to.
     //Else see UnsafeBufferView struct example using .loadBytes to recast read values
     private func fetchFixedSizeCArray<T, R>(source:T, boundToType:R.Type) -> [R] {
@@ -216,21 +180,5 @@ extension FixedSizeCollection {
 //    }
 //}
 
-
-
-
-
-
-
-
-////https://forums.swift.org/t/handling-the-new-forming-unsaferawpointer-warning/65523/4
-//@inlinable
-//func areOrderedSetsDuplicates<T>(_ lhs: OrderedSet<T>, _ rhs: OrderedSet<T>) -> Bool {
-//  withUnsafePointer(to: lhs) { lhs in
-//    withUnsafePointer(to: rhs) { rhs in
-//      return memcmp(lhs, rhs, MemoryLayout<OrderedSet<T>>.size) == 0
-//    }
-//  } || lhs == rhs
-//}
 
 

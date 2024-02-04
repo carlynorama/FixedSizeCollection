@@ -11,19 +11,16 @@
 
 
 import Foundation
-import CSupport
-
+import TestCSupport
+import FixedSizeCollection
 
 extension FixedSizeCollection {
-    
-    //TODO: Split into separate tests. [ ]
     //TODO: Check mutators do in fact mutate.
     
     
-    //TODO: Try to fix &fsc, ignore direct data access.
-    /*
-    static func basicPrint() throws {
-        var testCollection = FixedSizeCollection<Int32>(5, default: 5)
+    //TODO: Try to fix &fsc, (ignore direct data access.)
+    //static func basicPrint() throws {
+        //var testCollection = FixedSizeCollection<Int32>(5, default: 5)
         
         //TODO: I would like for this to work. override the prefix how?
         //error: cannot convert value of type 'UnsafeMutablePointer<FixedSizeCollection<Int32>>' to expected argument type 'UnsafeMutablePointer<Int32>'
@@ -32,8 +29,7 @@ extension FixedSizeCollection {
         //Expected Failure. Data doesn't know what Element is.
         //error: cannot convert value of type 'UnsafeMutablePointer<(Data)>' to expected argument type 'UnsafeMutablePointer<Int32>'
         //acknowledge_buffer(&(testCollection.dataBlob), testCollection.count)
-    }
-     */
+    //}
     
     static func rawBufferPointerPrint() throws {
         let testCollection = FixedSizeCollection<Int32>(5, default: 5)

@@ -10,14 +10,15 @@
     - Misc Options from the post
         - importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array,
         - conditionalizing the behavior on language version mode, so that Swift 6 code sees the imported field in its array form.
-- [ ] proto get and set subscripts already done, but subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
-- [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
-- [ ] when [unchecked:] becomes a thing, implement it.
-- [ ] an unsafe insert that will skip bounds checking. `.gunc(at: )`
+- [ ] If called a Collection it should match Collection preconceptions as much as possible. 
+    - [ ] proto get and set subscripts already done, but don't have bounds checking and subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
+    - [ ] when [unchecked:] becomes a thing, implement it, but in the mean time an unsafe insert that will skip bounds checking. `.gunc(at: )`, `.sunc(at:)`
+    - [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
+    - [ ] variadic inits
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
 - [ ] matrix[0][24] style init of some format
 - [ ] matrix access
-- [ ] variadic inits
+
 
 
 

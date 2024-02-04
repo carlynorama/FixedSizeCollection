@@ -6,6 +6,7 @@
 
 import XCTest
 @testable import FixedSizeCollection
+@testable import TestSwiftBridge
 
 final class FixedSizeCollectionTests: XCTestCase {
     func testBasicInitWithDefault() {

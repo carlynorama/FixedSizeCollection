@@ -11,6 +11,10 @@
 - https://github.com/apple/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md
 
 ### Code that does similar or related things
+
+- [Array](https://github.com/apple/swift/blob/2fa1022a912a1c07db2a3596d494adb35a28b5f3/stdlib/public/core/Array.swift)
+- [Collection](https://github.com/apple/swift/blob/2fa1022a912a1c07db2a3596d494adb35a28b5f3/stdlib/public/core/Collection.swift)
+
 - https://github.com/search?q=org%3AApple%20Data&type=code
 - https://github.com/search?q=org%3AApple+withCString&type=code
 - https://github.com/apple/swift/blob/main/stdlib/public/core/StaticString.swift#L72
@@ -19,6 +23,7 @@
 - https://github.com/apple/swift-algorithms
 - https://github.com/karwa/swift-url/blob/f4a66a7645ab40a814fae838f33cf346bb726a3d/Sources/WebURL/Util/Pointers.swift#L324
 - https://forums.swift.org/t/a-large-fixed-width-integer-swift-package/62743
+- 25:52 of WWDC 2020 [Safely Manage Pointers in Swift](https://developer.apple.com/wwdc20/10167)
 - https://github.com/carlynorama/UnsafeWrapCSampler
 - https://github.com/carlynorama/UnsafeExplorer
 
