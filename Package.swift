@@ -26,6 +26,6 @@ let package = Package(
     ),
     .testTarget(
       name: "FixedSizeCollectionTests",
-      dependencies: ["FixedSizeCollection", "TestSwiftBridge"]),
+      dependencies: ["FixedSizeCollection", "TestSwiftBridge", "TestCSupport"]),
   ]
 )

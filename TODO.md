@@ -85,13 +85,21 @@ A done in this context means initial interface, no assurance on quality of imple
     - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
 - [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
 - [ ] [faster bounds comparator](https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5)`UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)`
+- [ ] seems related borrow and inout
+    - https://forums.swift.org/t/pitch-introduce-for-borrow-and-for-inout-to-provide-non-copying-collection-iteration/62549
+    - https://forums.swift.org/t/pitch-borrow-and-inout-declaration-keywords/62366
+- [ ] seems related work on withUnsafeMutableBufferPointer
+    - https://forums.swift.org/t/why-does-the-withunsafemutablebufferpointer-closure-take-an-inout-parameter/6794/11
 
 
 ## C interop targets
 
 - see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
 
-- [ ] [nonmutable inout](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1), please.
+- [ ] nonmutable inout that works for C
+    - https://developer.apple.com/documentation/swift/calling-functions-with-pointer-parameters
+
+- [ ] [working with global C](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1), please.
 
 [SysEx messages in CoreMIDI](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25)
 
