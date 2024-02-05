@@ -12,7 +12,7 @@
 
 
 //TODO: try to get the & working.
-//TODO: try to get something that will something that can work for C const*
+//TODO: try to get something that will work for C const* functions
 
 //STATUS: On hold.
 

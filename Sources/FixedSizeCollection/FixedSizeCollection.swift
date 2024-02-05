@@ -40,33 +40,74 @@ extension FixedSizeCollection {
   //How to make sure that all the Data looks like the same type of
   //Collection of Elements when getting the bytes.
 
-  public init(_ count: Int, defaultsTo d: Element, initializer: () -> [Element] = { [] }) {
-    self.count = count
-    self._defaultValue = d
-    var result = initializer().prefix(count)
-    //if result.count > count { return nil }
-    for _ in 0...(count - result.count) {
-      result.append(d)
+    
+    
+    //----- Explicit Count
+    
+    public init(_ count: Int, defaultsTo d: Element, values:[Element]) {
+        self.count = count
+        self._defaultValue = d
+        var result = values.prefix(count)
+        //if result.count > count { return nil }
+        for _ in 0...(count - result.count) {
+          result.append(d)
+        }
+        self._storage = result.withUnsafeMutableBufferPointer { pointer in
+          Data(buffer: pointer)
+        }
     }
-    self._storage = result.withUnsafeMutableBufferPointer { pointer in
-      Data(buffer: pointer)
+    
+    @inlinable
+    static func makeFixedSizeCollection(count:N, defaultsTo d: Element? = nil, values:[Element]) -> FixedSizeCollection {
+        Self.init(defaultsTo: d, values:values)
     }
-  }
+    
+    
+    public init(_ count: Int, defaultsTo d: Element, initializer: () -> [Element] = { [] }) {
+        self = Self.init(count, defaultsTo: d, values: initializer())
+    }
+    
+    public init(_ count: Int, defaultsTo d: Element, _ values:Element...) {
+        self = Self.init(count, defaultsTo: d, values: values)
+    }
+    
+    
+    // ---- Inferred Count
+    
+    public init(defaultsTo d: Element? = nil, values:[Element]) {
+        self._defaultValue = d
+        var tmp = values
+        self._storage = tmp.withUnsafeMutableBufferPointer { pointer in
+          Data(buffer: pointer)
+        }
+        self.count = _storage.withUnsafeBytes { bytes in
+          let tmpCount = bytes.count / MemoryLayout<Element>.stride
+          precondition(tmpCount * MemoryLayout<Element>.stride == bytes.count)
+          precondition(
+            Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Element>.alignment))
+          return tmpCount
+        }
+    }
+    
+    @inlinable
+    static func makeFixedSizeCollection(defaultsTo d: Element? = nil, values:[Element]) -> FixedSizeCollection {
+        Self.init(defaultsTo: d, values:values)
+    }
+    
+    public init(defaultsTo d: Element? = nil, initializer: () -> [Element]) {
+      self = Self.makeFixedSizeCollection(defaultsTo:d, values: initializer())
+    }
+      
+      public init(defaultsTo d: Element? = nil, _ values:Element...) {
+         self = Self.makeFixedSizeCollection(defaultsTo:d, values: values)
+      }
+    
 
-  public init(defaultsTo d: Element? = nil, initializer: () -> [Element]) {
-    self._defaultValue = d
-    var tmp = initializer()
-    self._storage = tmp.withUnsafeMutableBufferPointer { pointer in
-      Data(buffer: pointer)
-    }
-    self.count = _storage.withUnsafeBytes { bytes in
-      let tmpCount = bytes.count / MemoryLayout<Element>.stride
-      precondition(tmpCount * MemoryLayout<Element>.stride == bytes.count)
-      precondition(
-        Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Element>.alignment))
-      return tmpCount
-    }
-  }
+    
+
+    
+ 
+    
 
   internal
     init(storage: _Storage, as: Element.Type, defaultsTo d: Element? = nil)
