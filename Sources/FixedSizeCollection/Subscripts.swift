@@ -12,7 +12,7 @@ public extension FixedSizeCollection {
     
     //@_borrowed ? https://github.com/apple/swift/blob/main/stdlib/public/core/Collection.swift#L425C3-L425C13
     @inlinable
-    subscript(position: Int) -> Element {
+    subscript(_ position: Int) -> Element {
         get {
             guard _checkSubscript(position) else {
                 //TODO: What's the right error
@@ -28,37 +28,41 @@ public extension FixedSizeCollection {
                 //TODO: What's the right error
                 fatalError()
             }
-            let startIndex = _storage.startIndex + position * _mStrideElem
+            let startIndex = _storage.startIndex + _mStrideOffset(for: position)
             let endIndex = startIndex + _mStrideElem
             Swift.withUnsafePointer(to: newValue) { sourceValuePointer in
                 _storage.replaceSubrange(startIndex..<endIndex, with: sourceValuePointer, count: _mStrideElem)
             }
         }
     }
+
     
-    //TODO: redo as index and subsequence
+    //TODO: redo as indices and subsequence?
     
     //TODO: //@inlinable can't be used with defaultValue
     //can't make inlineable if use self.defaultValue
     //more ergonomic to pass along existing, but what is the speed hit.
     //if a subsequence does that fix that?
-//    public subscript(bounds: N) ->  Self {
-//        get {
-//            //default makes this un-inline-able.
-//            return Self.init(defaultsTo: _defaultValue) {
-//                do {
-//                    try self.withUnsafeBytes { pointer in
-//                        let elemBoundArray = pointer.load(as: [Element].self)
-//                        //check for that bounds.contains(bounds) issue.
-//                        return elemBoundArray[bounds]
-//                    }
-//                } catch {
-//                    return []
-//                }
-//                return []
-//            }
-//        }
-//    }
+    subscript(_ r:Range<N>) ->  [Element] {
+        get {
+            guard _checkSubscript(r) else {
+                //TODO: What's the right error
+                fatalError("subscript invalid")
+            }
+            return guncCopyRangeAsArray(r)
+        }
+        set {
+            //TODO: Write actual range check subscript?
+            guard _checkSubscript(r) else {
+                //TODO: What's the right error
+                fatalError("subscript invalid")
+            }
+            guard r.count == newValue.count else {
+                fatalError("replacement value doesn't match range")
+            }
+            suncReplacingSubrange(range: r, with: newValue)
+        }
+    }
 }
     
     //TODO:Subsequence and Index?

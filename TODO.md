@@ -25,13 +25,13 @@ A done in this context means initial interface, no assurance on quality of imple
         - [ x ] get individual
         - [ x ] set individual
         - [ x ] test individual [x] get, [x] set
-        - [ ~ ] get bounds (have a version that return Self, not subsequence and that messes up Collection conformance. Hold off.)
-        - [ ] set bounds
-        - [ ] test bounds [ ] get [ ] set
+        - [ ~ ] get bounds (have a version that returns Array copy, not Slice)
+        - [ ~ ] set bounds, have underlying sunc function and test.
+        - [ ] test bounds [ x] get [ ~] set
     - [ ] when [unchecked:] becomes a thing, implement it, but in the mean time an unsafe insert that will skip bounds checking. `.gunc(at: )`, `.sunc(at:)`
         - [x] proto gunc
         - [x] proto sunc
-        - [ ] tests [ ] gunc [ ] sunc
+        - [x] tests [x] gunc [x] sunc
     - [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
     - [ ] variadic inits
     - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?

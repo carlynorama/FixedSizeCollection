@@ -6,9 +6,10 @@
 
 import XCTest
 @testable import FixedSizeCollection
-@testable import TestSwiftBridge
 
 final class FixedSizeCollectionTests: XCTestCase {
+    
+    //MARK: Getters
     func testBasicInitWithDefault() {
         let testCollection = FixedSizeCollection(4, defaultsTo: 12) { [1, 2, 3] }
         XCTAssertEqual(testCollection[0], 1, "collection 0 incorrect")
@@ -27,7 +28,7 @@ final class FixedSizeCollectionTests: XCTestCase {
         XCTAssertEqual(testCollection[4], nil, "collection 3 incorrect")
     }
     
-    func testAccess() {
+    func testIndividualAccess() {
         let baseArray = [1, 2, 3, 7]
         let testCollection = FixedSizeCollection<Int?>(baseArray.count, defaultsTo: nil) { baseArray }
         measure {
@@ -37,17 +38,52 @@ final class FixedSizeCollectionTests: XCTestCase {
         }
     }
     
-    // func testRangedAccess() {
-    //     let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    //     let testCollection = FixedSizeCollection<Int>(baseArray.count) { baseArray }
-    //     measure {
-    //         for i in 0..<testCollection.count {
-    //             XCTAssertEqual(testCollection[i], baseArray[i], "collection did not retrieve expected value")
-    //         }
-    //     }
-    // }
+    func testUncheckedRangedAccess() throws {
+        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        //let baseArray = [1, 2, 3, 7]
+        let testCollection = FixedSizeCollection<Int> { baseArray }
+        let range = 3..<7
+        let base_sub = Array(baseArray[range])
+        measure {
+            let tc_sub = testCollection.guncCopyRangeAsArray(range)
+            for i in 0..<base_sub.count {
+                XCTAssertEqual(tc_sub[i], base_sub[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
     
-    func testUpdate() {
+    func testCheckedRangedAccess()  {
+        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        //let baseArray = [1, 2, 3, 7]
+        let testCollection = FixedSizeCollection<Int> { baseArray }
+        let range = 3..<7
+        let base_sub = Array(baseArray[range])
+        measure {
+            let tc_sub = try! testCollection.copyValuesAsArray(range:range)
+            for i in 0..<base_sub.count {
+                XCTAssertEqual(tc_sub[i], base_sub[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
+    
+    func testSubscriptRangedAccess()  {
+        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        //let baseArray = [1, 2, 3, 7]
+        let testCollection = FixedSizeCollection<Int> { baseArray }
+        let range = 3..<7
+        let base_sub = Array(baseArray[range])
+        measure {
+            let tc_sub = testCollection[range]
+            for i in 0..<base_sub.count {
+                XCTAssertEqual(tc_sub[i], base_sub[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
+    
+    
+    //MARK: Setters
+    
+    func testUpdateIndividual() {
         var testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
         measure {
             for i in 0..<testCollection.count {
@@ -59,39 +95,50 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     func testUpdateForEach() {
-        let testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
+        let exptdValue = 34
+        let testCollection = FixedSizeCollection<Int>(5, defaultsTo: exptdValue)
         measure {
             testCollection.forEach {
-                XCTAssertEqual($0, 0, "collection did not retrieve expected value")
+                XCTAssertEqual($0, exptdValue, "collection did not retrieve expected value")
             }
         }
     }
     
-    //Better way to test C? 
-    //TODO: Split off C to different test group.
-    func testC_rawBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.rawBufferPointerPrint()
+    
+    func testSuncRangedUpdate()  {
+        let baseArray:[Int32] =     [0, 1, 2,  3,  4,  5, 6, 7, 8, 9]
+        let expectedArray:[Int32] = [0, 1, 44, 43, 42, 5, 6, 7, 8, 9]
+        let newValue:[Int32] = [44, 43, 42]
+        let range = (2..<5)
+        //let baseArray = [1, 2, 3, 7]
+        var tC = FixedSizeCollection<Int32> { baseArray }
+        measure {
+            tC.suncReplacingSubrange(range: range, with: newValue)
+            for i in 0..<expectedArray.count {
+                XCTAssertEqual(tC[i], expectedArray[i], "collection sub range did not retrieve expected value")
+            }
+        }
     }
     
-    func testC_mutableRawBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.mutableRawBufferPointerPrint()
+    func testSubscriptRangedUpdate()  {
+        let baseArray:[Int32] =     [0, 1, 2,  3,  4,  5, 6, 7, 8, 9]
+        let expectedArray:[Int32] = [0, 1, 44, 43, 42, 5, 6, 7, 8, 9]
+        let newValue:[Int32] = [44, 43, 42]
+        let range = (2..<5)
+        //let baseArray = [1, 2, 3, 7]
+        var tC = FixedSizeCollection<Int32> { baseArray }
+        measure {
+            tC[range] = newValue
+            for i in 0..<expectedArray.count {
+                XCTAssertEqual(tC[i], expectedArray[i], "collection sub range did not retrieve expected value")
+            }
+        }
     }
     
-    func testC_boundBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundBufferPointerPrint()
-    }
     
-    func testC_boundMutableBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundMutableBufferPointerPrint()
-    }
     
-    func testC_boundPointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundPointerPrint()
-    }
     
-    func testC_boundMutablePointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundMutablePointerPrint()
-    }
+    
 }
 
 
