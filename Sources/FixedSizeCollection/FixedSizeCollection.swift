@@ -36,6 +36,11 @@ public struct FixedSizeCollection<Element> : RandomAccessCollection {
 //MARK: Inits
 public extension FixedSizeCollection {
     
+    //TODO: Should these be [Element] or of some Collection<Element>
+    //Best for ergonomics? Easiest for complexity?
+    //How to make sure that all the Data looks like the same type of
+    //Collection of Elements when getting the bytes.
+    
     init(_ count:Int, defaultsTo d:Element, initializer:() -> [Element] = { [] }) {
         self.count = count
         self._defaultValue = d

@@ -6,7 +6,7 @@
 //
 
 
-enum FixedSizeCollectionError: Error {
+enum FSCError: Error {
   case unknownError(message: String)
-  case memcpyError
+    case outOfRange
 }

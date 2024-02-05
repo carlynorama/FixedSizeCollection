@@ -51,18 +51,6 @@ public extension FixedSizeCollection {
             }
             return guncCopyRangeAsArray(r)
         }
-        set {
-            //TODO: Write actual range check subscript?
-            guard _checkSubscript(r) else {
-                //TODO: What's the right error
-                fatalError()
-            }
-            let startIndex = _storage.startIndex + _mStrideOffset(for: r.lowerBound)
-            let endIndex = _storage.startIndex + _mStrideOffset(for: r.upperBound)
-            Swift.withUnsafePointer(to: newValue) { sourceValuePointer in
-                _storage.replaceSubrange(startIndex..<endIndex, with: sourceValuePointer, count:  _mStrideOffset(for: count))
-            }
-        }
     }
 }
     

@@ -8,6 +8,8 @@ import XCTest
 @testable import FixedSizeCollection
 
 final class FixedSizeCollectionTests: XCTestCase {
+    
+    //MARK: Getters
     func testBasicInitWithDefault() {
         let testCollection = FixedSizeCollection(4, defaultsTo: 12) { [1, 2, 3] }
         XCTAssertEqual(testCollection[0], 1, "collection 0 incorrect")
@@ -36,7 +38,7 @@ final class FixedSizeCollectionTests: XCTestCase {
         }
     }
     
-    func testGuncRangedAccess() throws {
+    func testUncheckedRangedAccess() throws {
         let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         //let baseArray = [1, 2, 3, 7]
         let testCollection = FixedSizeCollection<Int> { baseArray }
@@ -50,7 +52,38 @@ final class FixedSizeCollectionTests: XCTestCase {
         }
     }
     
-    func testUpdate() {
+    func testCheckedRangedAccess()  {
+        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        //let baseArray = [1, 2, 3, 7]
+        let testCollection = FixedSizeCollection<Int> { baseArray }
+        let range = 3..<7
+        let base_sub = Array(baseArray[range])
+        measure {
+            let tc_sub = try! testCollection.copyValuesAsArray(range:range)
+            for i in 0..<base_sub.count {
+                XCTAssertEqual(tc_sub[i], base_sub[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
+    
+    func testSubscriptRangedAccess()  {
+        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        //let baseArray = [1, 2, 3, 7]
+        let testCollection = FixedSizeCollection<Int> { baseArray }
+        let range = 3..<7
+        let base_sub = Array(baseArray[range])
+        measure {
+            let tc_sub = testCollection[range]
+            for i in 0..<base_sub.count {
+                XCTAssertEqual(tc_sub[i], base_sub[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
+    
+    
+    //MARK: Setters
+    
+    func testUpdateIndividual() {
         var testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
         measure {
             for i in 0..<testCollection.count {
@@ -62,13 +95,34 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     func testUpdateForEach() {
-        let testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
+        let exptdValue = 34
+        let testCollection = FixedSizeCollection<Int>(5, defaultsTo: exptdValue)
         measure {
             testCollection.forEach {
-                XCTAssertEqual($0, 0, "collection did not retrieve expected value")
+                XCTAssertEqual($0, exptdValue, "collection did not retrieve expected value")
             }
         }
     }
+    
+    
+    func testSubscriptRangedUpdate()  {
+        let baseArray:[Int32] =     [0, 1, 2,  3,  4,  5, 6, 7, 8, 9]
+        let expectedArray:[Int32] = [0, 1, 44, 43, 42, 5, 6, 7, 8, 9]
+        let newValue:[Int32] = [44, 43, 42]
+        let range = (2..<5)
+        //let baseArray = [1, 2, 3, 7]
+        var tC = FixedSizeCollection<Int32> { baseArray }
+        measure {
+            tC.suncReplacingSubrange(range: range, with: newValue)
+            for i in 0..<expectedArray.count {
+                XCTAssertEqual(tC[i], expectedArray[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
+    
+    
+    
+    
     
 }
 
