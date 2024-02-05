@@ -19,15 +19,15 @@ A done in this context means initial interface, no assurance on quality of imple
         - [ ] ?? importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array?
         - - [ ] ?? behavior based on language version mode, so that Swift 6 code sees the imported field in its array form?
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
-    - [ ] proto get and set subscripts already done, but don't have bounds checking and subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
+    - [ ~ ] proto get and set subscripts already done, but don't have bounds checking and subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
         - [ x ] subscript check function
             - [ ] what kind of fatal error should that be? 
         - [ x ] get individual
         - [ x ] set individual
         - [ x ] test individual [x] get, [x] set
         - [ ~ ] get bounds (have a version that returns Array copy, not Slice)
-        - [ ~ ] set bounds, have underlying sunc function and test.
-        - [ ] test bounds [ x] get [ ~] set
+        - [ x ] set bounds
+        - [ x ] test bounds [ x] get [ x ] set
     - [ ] when [unchecked:] becomes a thing, implement it, but in the mean time an unsafe insert that will skip bounds checking. `.gunc(at: )`, `.sunc(at:)`
         - [x] proto gunc
         - [x] proto sunc
@@ -63,8 +63,17 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] is this best approach for using C (C++?) with XCTest
 
 ## Repo Meta
-- [ ] add linter plugin
-- [ ] platform info in Package.swift
+- [ x ] [swift-format](https://github.com/apple/swift-format/) CLI installed & ran with default rules.
+        ```
+            #on new branch b/c -i is in-place
+            #note flags are NOT -ri, . works for all current directory
+            swift-format format -r -i
+            swift-format lint -r . 
+        ``` `)
+- [   ] add plugin? it's not in the other Swift repos, which do official Swift projects actually use? 
+- [ ] 
+- [ ] platform info in Package.swift, TBD how far back? 
+- [ ] what .clang-format file to use? 
 
 ## Misc & General Research Q's 
 - [ ] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up.
