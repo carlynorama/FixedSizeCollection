@@ -5,10 +5,9 @@
 // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
 
 import XCTest
-
 @testable import FixedSizeCollection
-
-final class FixedSizeCollectionTests: XCTestCase {
+    
+final class AccessingAndUpdating: XCTestCase {
 
   //MARK: Getters
   func testBasicInitWithDefault() {
