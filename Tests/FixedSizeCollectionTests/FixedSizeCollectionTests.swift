@@ -107,6 +107,16 @@ final class FixedSizeCollectionTests: XCTestCase {
       }
     }
   }
+    
+    func testUpdateForIn() {
+      let exptdValue = 34
+      let testCollection = FixedSizeCollection<Int>(5, defaultsTo: exptdValue)
+      measure {
+        for item in testCollection {
+          XCTAssertEqual(item, exptdValue, "collection did not retrieve expected value")
+        }
+      }
+    }
 
   func testSuncRangedUpdate() {
     let baseArray: [Int32] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
