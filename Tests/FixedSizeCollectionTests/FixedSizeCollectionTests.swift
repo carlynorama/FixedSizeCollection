@@ -6,7 +6,6 @@
 
 import XCTest
 @testable import FixedSizeCollection
-@testable import TestSwiftBridge
 
 final class FixedSizeCollectionTests: XCTestCase {
     func testBasicInitWithDefault() {
@@ -27,7 +26,7 @@ final class FixedSizeCollectionTests: XCTestCase {
         XCTAssertEqual(testCollection[4], nil, "collection 3 incorrect")
     }
     
-    func testAccess() {
+    func testIndividualAccess() {
         let baseArray = [1, 2, 3, 7]
         let testCollection = FixedSizeCollection<Int?>(baseArray.count, defaultsTo: nil) { baseArray }
         measure {
@@ -37,15 +36,19 @@ final class FixedSizeCollectionTests: XCTestCase {
         }
     }
     
-    // func testRangedAccess() {
-    //     let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    //     let testCollection = FixedSizeCollection<Int>(baseArray.count) { baseArray }
-    //     measure {
-    //         for i in 0..<testCollection.count {
-    //             XCTAssertEqual(testCollection[i], baseArray[i], "collection did not retrieve expected value")
-    //         }
-    //     }
-    // }
+    func testGuncRangedAccess() throws {
+        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        //let baseArray = [1, 2, 3, 7]
+        let testCollection = FixedSizeCollection<Int> { baseArray }
+        let range = 3..<7
+        let base_sub = Array(baseArray[range])
+        measure {
+            let tc_sub = testCollection.guncCopyRangeAsArray(range)
+            for i in 0..<base_sub.count {
+                XCTAssertEqual(tc_sub[i], base_sub[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
     
     func testUpdate() {
         var testCollection = FixedSizeCollection<Int>(5, defaultsTo: 0)
@@ -67,31 +70,6 @@ final class FixedSizeCollectionTests: XCTestCase {
         }
     }
     
-    //Better way to test C? 
-    //TODO: Split off C to different test group.
-    func testC_rawBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.rawBufferPointerPrint()
-    }
-    
-    func testC_mutableRawBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.mutableRawBufferPointerPrint()
-    }
-    
-    func testC_boundBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundBufferPointerPrint()
-    }
-    
-    func testC_boundMutableBufferPointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundMutableBufferPointerPrint()
-    }
-    
-    func testC_boundPointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundPointerPrint()
-    }
-    
-    func testC_boundMutablePointerPrint() throws {
-        try FixedSizeCollection<CInt>.boundMutablePointerPrint()
-    }
 }
 
 

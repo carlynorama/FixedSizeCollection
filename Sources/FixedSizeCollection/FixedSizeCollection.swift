@@ -10,7 +10,7 @@ import Foundation
 //Unresolved. Should perhaps be N:Int in the generic.
 public struct FixedSizeCollection<Element> : RandomAccessCollection {
     public typealias N = Int
-    public typealias _Storage = Data
+    public typealias _Storage = Data  //Could be buffer or storage some day.
     //TODO: buffer vs storage in Array vs Collection semantics
     
     public let count:N   //Unresolved. Int, UInt, CInt... For now starting with Int.
@@ -32,14 +32,10 @@ public struct FixedSizeCollection<Element> : RandomAccessCollection {
     @usableFromInline
     internal var _storage:_Storage
     
-    //TODO: Believe this is copy,copy not COW?
-    var all:[Element] {
-        loadFixedSizeCArray(source: _storage, ofType: Element.self) ?? []
-    }
-    
 }
 //MARK: Inits
 public extension FixedSizeCollection {
+    
     init(_ count:Int, defaultsTo d:Element, initializer:() -> [Element] = { [] }) {
         self.count = count
         self._defaultValue = d
@@ -67,10 +63,11 @@ public extension FixedSizeCollection {
         }
     }
     
-    init(dataBlob: Data, as: Element.Type, defaultsTo d:Element? = nil) {
+    internal
+    init(storage: _Storage, as: Element.Type, defaultsTo d:Element? = nil) {
         self._defaultValue = d
-        self._storage = dataBlob
-        self.count = dataBlob.withUnsafeBytes { bytes in
+        self._storage = storage
+        self.count = storage.withUnsafeBytes { bytes in
             let tmpCount = bytes.count / MemoryLayout<Element>.stride
             precondition(tmpCount * MemoryLayout<Element>.stride == bytes.count)
             precondition(Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Element>.alignment))
@@ -99,8 +96,12 @@ extension FixedSizeCollection {
     
     @inlinable
     internal func _checkSubscript(_ position:N) -> Bool {
-        //TODO: Okay to depend on Range or, Nah. Can't do for Range(Range)
         (0..<count).contains(position)
+    }
+    
+    @inlinable
+    internal func _checkSubscript(_ range:Range<N>) -> Bool {
+        (0..<count).contains(range.lowerBound) && (0..<count).contains(range.upperBound)
     }
     
 }
@@ -108,8 +109,13 @@ extension FixedSizeCollection {
 
 //MARK: Helpers
 extension FixedSizeCollection {
+    @inlinable
+    internal func _sliceOfStorage(_ range:Range<N>) throws -> _Storage.SubSequence {
+        let startIndex = _storage.startIndex + _mStrideOffset(for: range.lowerBound)
+        let endIndex = _storage.startIndex + _mStrideOffset(for: range.upperBound)
+        return _storage[startIndex..<endIndex]
+    }
     
-    //TODO: To cache or not to cache
     @inlinable
     internal var _mStrideFull:N {  MemoryLayout<Element>.stride * count }
     
@@ -117,33 +123,11 @@ extension FixedSizeCollection {
     internal var _mStrideElem:N {  MemoryLayout<Element>.stride }
     
     @inlinable
-    internal func _offsetStride(itemCount:N) -> N { MemoryLayout<Element>.stride * itemCount }
-    
-    @inlinable
-    internal var _mSizeFull:N {  MemoryLayout<Element>.size * count }
-    
-    @inlinable
-    internal var _mSizeElem:N {  MemoryLayout<Element>.size }
-    
-    @inlinable
-    internal func _offsetSize(itemCount:N) -> N { MemoryLayout<Element>.size * itemCount }
-    
-    //Okay to use assumingMemoryBound here IF using type ACTUALLY bound to.
-    //Else see UnsafeBufferView struct example using .loadBytes to recast read values
-    private func fetchFixedSizeCArray<T, R>(source:T, boundToType:R.Type) -> [R] {
-        Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R] in
-            let bufferPointer = rawPointer.assumingMemoryBound(to: boundToType)
-            return [R](bufferPointer)
-        }
-    }
-    
-    //TODO: Test non-numerics
-    private func loadFixedSizeCArray<T, R>(source:T, ofType:R.Type) -> [R]? {
-        Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R]? in
-            rawPointer.baseAddress?.load(as: [R].self)
-        }
-    }
+    internal func _mStrideOffset(for count:N) -> N { MemoryLayout<Element>.stride * count }
 }
+
+
+
 
 //What is the better way?
 //extension FixedSizeCollection where Element:OptionalProtocol {
