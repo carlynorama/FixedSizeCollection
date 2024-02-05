@@ -85,7 +85,6 @@ final class WithCTests: XCTestCase {
         
         // ---------------------------------------------------------------------
         // ----------------------- const + C
-        
         //void acknowledge_cint_buffer_const(const int* values, const size_t n);
         
         //error: cannot convert value of type 'CInt' (aka 'Int32')
@@ -107,6 +106,7 @@ final class WithCTests: XCTestCase {
         
         // ---------------------------------------------------------------------
         // ----------------------- mutable + C
+        //void acknowledge_int_buffer_const(const int* values, const size_t n);
         
         //error: cannot convert value of type 'CInt' (aka 'Int32')
         //to expected argument type 'UnsafePointer<Int32>?'
