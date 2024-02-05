@@ -83,12 +83,4 @@ internal extension FixedSizeCollection {
 
 
 
-//            //TODO: Write actual range check subscript?
-//            guard _checkSubscript(r) else {
-//                //TODO: What's the right error
-//                fatalError("subscript invalid")
-//            }
-//            guard r.count == newValue.count else {
-//                fatalError("replacement value doesn't match range")
-//            }
-//
+

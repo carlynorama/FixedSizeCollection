@@ -51,6 +51,17 @@ public extension FixedSizeCollection {
             }
             return guncCopyRangeAsArray(r)
         }
+        set {
+            //TODO: Write actual range check subscript?
+            guard _checkSubscript(r) else {
+                //TODO: What's the right error
+                fatalError("subscript invalid")
+            }
+            guard r.count == newValue.count else {
+                fatalError("replacement value doesn't match range")
+            }
+            suncReplacingSubrange(range: r, with: newValue)
+        }
     }
 }
     

@@ -105,7 +105,7 @@ final class FixedSizeCollectionTests: XCTestCase {
     }
     
     
-    func testSubscriptRangedUpdate()  {
+    func testSuncRangedUpdate()  {
         let baseArray:[Int32] =     [0, 1, 2,  3,  4,  5, 6, 7, 8, 9]
         let expectedArray:[Int32] = [0, 1, 44, 43, 42, 5, 6, 7, 8, 9]
         let newValue:[Int32] = [44, 43, 42]
@@ -114,6 +114,21 @@ final class FixedSizeCollectionTests: XCTestCase {
         var tC = FixedSizeCollection<Int32> { baseArray }
         measure {
             tC.suncReplacingSubrange(range: range, with: newValue)
+            for i in 0..<expectedArray.count {
+                XCTAssertEqual(tC[i], expectedArray[i], "collection sub range did not retrieve expected value")
+            }
+        }
+    }
+    
+    func testSubscriptRangedUpdate()  {
+        let baseArray:[Int32] =     [0, 1, 2,  3,  4,  5, 6, 7, 8, 9]
+        let expectedArray:[Int32] = [0, 1, 44, 43, 42, 5, 6, 7, 8, 9]
+        let newValue:[Int32] = [44, 43, 42]
+        let range = (2..<5)
+        //let baseArray = [1, 2, 3, 7]
+        var tC = FixedSizeCollection<Int32> { baseArray }
+        measure {
+            tC[range] = newValue
             for i in 0..<expectedArray.count {
                 XCTAssertEqual(tC[i], expectedArray[i], "collection sub range did not retrieve expected value")
             }
