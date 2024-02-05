@@ -47,6 +47,7 @@ A done in this context means initial interface, no assurance on quality of imple
 
 ### inline
 - [ ] all of it
+- [ ] make headers look more like official headers, but not official headers
 
 ### reference
 - [ ] all of it
@@ -74,6 +75,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - [] [Which Types](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/19)?(CXType_ConstantArray, CXType_Vector, CXType_IncompleteArray, CXType_VariableArray, CXType_DependentSizedArray)
     - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
 - [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
+- [ ] [faster bounds comparator](https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5)`UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)`
 
 
 ## C interop targets
@@ -137,3 +139,37 @@ for index in 0..< sensor.valuesCount {
 
 writeSensor(&sensor)
 ```
+
+
+
+
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the Swift.org open source project
+//
+// Copyright (c) 2024 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+// See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
+//
+//===----------------------------------------------------------------------===//
+For C or C++ source or header files, the code header should look this:
+
+//===-- subfolder/Filename.h - Very brief description -----------*- C++ -*-===//
+//
+// This source file is part of the Swift.org open source project
+//
+// Copyright (c) 2024 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+// See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains stuff that I am describing here in the header and will
+/// be sure to keep up to date.
+///
+//===----------------------------------------------------------------------===//
