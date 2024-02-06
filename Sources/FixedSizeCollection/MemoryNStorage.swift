@@ -21,12 +21,12 @@ extension FixedSizeCollection {
     
     @inlinable
     internal func _checkSubscript(_ position: N) -> Bool {
-        (0..<count).contains(position)
+        Self.fastContains(l: 0, h: count, x: position)
     }
     
     @inlinable
     internal func _checkSubscript(_ range: Range<N>) -> Bool {
-        (0..<count).contains(range.lowerBound) && (0..<count).contains(range.upperBound)
+        Self.fastContains(l: 0, h: count, x: range.lowerBound) && Self.fastContains(l: 0, h: count, x: range.upperBound)
     }
     
 }
