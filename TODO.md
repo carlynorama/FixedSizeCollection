@@ -29,7 +29,7 @@ A done in this context means initial interface, no assurance on quality of imple
         - [ ~ ] get bounds (have a version that returns Array copy, not Slice)
         - [x] set bounds
         - [x] test bounds [ x] get [x] set
-    - [ ] when [unchecked:] becomes a thing, implement it, but in the mean time an unsafe insert that will skip bounds checking. `.gunc(at: )`, `.sunc(at:)`
+    - [x] when [unchecked:] becomes a thing, implement it, but in the mean time an unsafe insert that will skip bounds checking. `.gunc(at: )`, `.sunc(at:)`
         - [x] proto gunc
         - [x] proto sunc
         - [x] tests [x] gunc [x] sunc
