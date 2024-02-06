@@ -9,18 +9,18 @@ A done in this context means initial interface, no assurance on quality of imple
 
 - [ ] Must work well with C
     - [ ] examples from C interop section
-        - [ ] make [nonmutable inout prefix](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1), please. to compliment mutable gotten from &
     - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
     - [ ] ?? looking for zeros / default value as nil?
     - [ ] pass an individual Element or slice to a C function.
     - [ ] FixedSizeCollection(copyOf: TypedPointer, count:N)
-    - [ ]
     - [ ] ?? Misc Options from the post
         - [ ] ?? importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array?
         - - [ ] ?? behavior based on language version mode, so that Swift 6 code sees the imported field in its array form?
-    - [ ] Add nullability flags in example C code, but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18). 
+    - [ ] Add nullability flags in example C code (most modern?), but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18). 
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
-    - [ ~ ] proto get and set subscripts already done, but don't have bounds checking and subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
+    - [  ] & pointing to typed version of storage
+    - [ ~ ] subscripts 
+        - [ x ] add bounds checking as subscripts should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift) bounds check.
         - [ x ] subscript check function
             - [ ] what kind of fatal error should that be? 
         - [ x ] get individual
@@ -33,12 +33,12 @@ A done in this context means initial interface, no assurance on quality of imple
         - [x] proto gunc
         - [x] proto sunc
         - [x] tests [x] gunc [x] sunc
-    - [ ] No `append`. Makes no sense. But yes an insert on FSC with optional Element type that will look for a nil value to replace.
-    - [ ] variadic inits
+    - [ ] No `append` for now. Makes no sense for the _Storage type. But yes an insert on FSC with optional Element type that will look for a default value to replace.
+    - [ x ] variadic inits
+        - [ x ] written
+        - [ x ] tests
     - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?
         - [ ] get subsequence range, @inlinable and self.defaultValue ans SubSequence
-    - pointer prefix sugar
-        - [ ] & returns mutable pointer like Collection
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
 - [ ] matrix[0][24] style init of some format
 - [ ] matrix access
@@ -56,7 +56,7 @@ A done in this context means initial interface, no assurance on quality of imple
 - [ ] make README more like normal readme. Add context in to different doc
 
 ### meta
-- [ ] Split this TODO into separate files
+- [ ] Split this TODO into separate files?
 
 ## Testing Meta & Misc
 -  ~~ [ ] in a package manager how to have a per file target inclusion? (testing functions) ~~
@@ -70,9 +70,8 @@ A done in this context means initial interface, no assurance on quality of imple
             #note flags are NOT -ri, . works for all current directory
             swift-format format -r -i
             swift-format lint -r . 
-        ``` `)
+        ``` 
 - [   ] add plugin? it's not in the other Swift repos, which do official Swift projects actually use? 
-- [ ] 
 - [ ] platform info in Package.swift, TBD how far back? 
 - [ ] what .clang-format file to use? 
 
@@ -81,26 +80,31 @@ A done in this context means initial interface, no assurance on quality of imple
 - [ ] default is a keyword, is there a better label 
 - [ ] Iterators and Stream, what comes with Random Access Collection? 
 - [ ] SIL Builtins,  @inline(always), @alwaysEmitIntoClient for making Matrix type (https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/9)
+- [ ] [faster bounds comparator](https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5)`UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)`
 - [ ] [Cxx too?]
     - [] [Which Types](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/19)?(CXType_ConstantArray, CXType_Vector, CXType_IncompleteArray, CXType_VariableArray, CXType_DependentSizedArray)
     - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
 - [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
-- [ ] [faster bounds comparator](https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5)`UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)`
-- [ ] seems related borrow and inout
+
+- [ ] seems related:
     - https://forums.swift.org/t/pitch-introduce-for-borrow-and-for-inout-to-provide-non-copying-collection-iteration/62549
     - https://forums.swift.org/t/pitch-borrow-and-inout-declaration-keywords/62366
-- [ ] seems related work on withUnsafeMutableBufferPointer
     - https://forums.swift.org/t/why-does-the-withunsafemutablebufferpointer-closure-take-an-inout-parameter/6794/11
+    - https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
+    - https://github.com/apple/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md
+    - https://forums.swift.org/t/pitch-non-escapable-types-and-lifetime-dependency/69865
+    - https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md
+    - https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
+    - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
 
 
 ## C interop targets
 
 - see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
 
-- [ ] nonmutable inout that works for C
-    - https://developer.apple.com/documentation/swift/calling-functions-with-pointer-parameters
+- [ ] (phantom non working const pointers, ghost in one devs machine?)
 
-- [ ] [working with global C](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1), please.
+- [ ] [working with global C arrays](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1).
 
 [SysEx messages in CoreMIDI](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25)
 

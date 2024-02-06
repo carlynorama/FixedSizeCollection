@@ -1,7 +1,6 @@
 # FixedSizeCollection
 
 See  https://forums.swift.org/t/approaches-for-fixed-size-arrays/
-- Previous Pitch: https://forums.swift.org/t/
 
 ## Major Use Cases
 
@@ -20,28 +19,15 @@ Specs are in [TODO.md](TODO.md)
 
 ### Currently Implemented
 
+All inits create copies into the types personal _Storage (currently Data). Potentially could be a _BufferView instead. 
+
 ```swift
     init(_ count:Int, default d:Element, initializer:() -> [Element] = { [] }) 
-    init(initializer:() -> [Element])
-    init(dataBlob: Data, as: Element.Type)
+    init(_ count: Int, defaultsTo d: Element, _ values:Element...)
+    internal init(_ count:Int, storage: _Storage, defaultsTo d: Element?, as: Element.Type) //which is Data for now
 ```
 
-### Under Consideration
-
-#### For working with C
-
-```
-FixedSizeCollection(copyOf: TypedPointer, count:N)
-
-```
-
-Possible: 
-
-```
-FixedSizeCollection(viewOf: TypedPointer, count:N)
-```
-
-But is that inherently an Unsafe type? How can swift lock the underlying storage if in a C or C++ library. And if can't, how to signal to client without making an UnsafeFixedSizeCollection type? Or, fundamentally, is that this type? 
+Theses all have a duplicate overload where count can be inferred from the values submitted that also doesn't require a default set. 
 
 
 ## Sugar and Spellings
@@ -166,9 +152,13 @@ Tuples as the backing memory have been floated and rejected.  The feel on the st
 - Motivating Forum Post: https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 - Previous Pitch: https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023
 
-### Related Proposals
+### Related Pitches & Proposals
 - https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
 - https://github.com/apple/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md
+- https://forums.swift.org/t/pitch-non-escapable-types-and-lifetime-dependency/69865
+- https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md
+- https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
+- https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
 
 ### Code that does similar or related things
 
