@@ -20,23 +20,23 @@ A done in this context means initial interface, no assurance on quality of imple
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
     - [  ] & pointing to typed version of storage
     - [ ~ ] subscripts 
-        - [ x ] add bounds checking as subscripts should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift) bounds check.
-        - [ x ] subscript check function
+        - [x] add bounds checking as subscripts should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift) bounds check.
+        - [x] subscript check function
             - [ ] what kind of fatal error should that be? 
-        - [ x ] get individual
-        - [ x ] set individual
-        - [ x ] test individual [x] get, [x] set
+        - [x] get individual
+        - [x] set individual
+        - [x] test individual [x] get, [x] set
         - [ ~ ] get bounds (have a version that returns Array copy, not Slice)
-        - [ x ] set bounds
-        - [ x ] test bounds [ x] get [ x ] set
+        - [x] set bounds
+        - [x] test bounds [ x] get [x] set
     - [ ] when [unchecked:] becomes a thing, implement it, but in the mean time an unsafe insert that will skip bounds checking. `.gunc(at: )`, `.sunc(at:)`
         - [x] proto gunc
         - [x] proto sunc
         - [x] tests [x] gunc [x] sunc
     - [ ] No `append` for now. Makes no sense for the _Storage type. But yes an insert on FSC with optional Element type that will look for a default value to replace.
-    - [ x ] variadic inits
-        - [ x ] written
-        - [ x ] tests
+    - [x] variadic inits
+        - [x] written
+        - [x] tests
     - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?
         - [ ] get subsequence range, @inlinable and self.defaultValue ans SubSequence
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
@@ -64,7 +64,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] is this best approach for using C (C++?) with XCTest
 
 ## Repo Meta
-- [ x ] [swift-format](https://github.com/apple/swift-format/) CLI installed & ran with default rules.
+- [x] [swift-format](https://github.com/apple/swift-format/) CLI installed & ran with default rules.
         ```
             #on new branch b/c -i is in-place
             #note flags are NOT -ri, . works for all current directory
