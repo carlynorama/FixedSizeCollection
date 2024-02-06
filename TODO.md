@@ -18,6 +18,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] ?? Misc Options from the post
         - [ ] ?? importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array?
         - - [ ] ?? behavior based on language version mode, so that Swift 6 code sees the imported field in its array form?
+    - [ ] Add nullability flags in example C code, but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18). 
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
     - [ ~ ] proto get and set subscripts already done, but don't have bounds checking and subscript should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift), they need the bounds check.
         - [ x ] subscript check function
