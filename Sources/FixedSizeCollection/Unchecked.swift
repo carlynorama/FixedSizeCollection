@@ -48,26 +48,6 @@ extension FixedSizeCollection {
     return tmp
   }
 
-  //TODO: [Element] or some Collection<Element>, same Q on inits.
-  //This is perhaps more checked than the sunc moniker implies.
-  //    @inlinable mutating
-  //    func suncReplaceSubrange(startIndex:N, newValues:[Element], canTruncate:Bool = true) {
-  //        var endIndex = startIndex + newValues.count
-  //        if !canTruncate {
-  //            guard endIndex < count else {
-  //                fatalError("too many new values for startIndex")
-  //            }
-  //        } else {
-  //            endIndex = Swift.min(endIndex, count)
-  //        }
-  //        let startPatchIdx = _storage.startIndex + _mStrideOffset(for: startIndex)
-  //        let endPatchIdx = _storage.startIndex + _mStrideOffset(for: endIndex)
-  //        let replacementByteCount =
-  //        Swift.withUnsafePointer(to: newValues) { sourceValuePointer in
-  //            _storage.replaceSubrange(startPatchIdx..<endPatchIdx, with: sourceValuePointer, count: endPatchIdx-startPatchIdx)
-  //        }
-  //    }
-
   @inlinable
   mutating
     func suncReplacingSubrange(range: Range<N>, with newValue: [Element])

@@ -15,8 +15,9 @@
 //-------------------------------------------------------------------
 
 //------------------------------------------------------ fixed arrays
-uint8_t random_provider_uint8_array[27];
-uint32_t random_provider_RGBA_array[9];
+uint8_t fsc_uint8_array[27];
+uint32_t fsc_RGBA_array[9];
+int32_t fsc_int32_array[7];
 
 //---------------------------------------------------- utility prints
 void acknowledge_cint_buffer(int* array, const size_t n);

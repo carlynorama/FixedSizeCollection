@@ -7,7 +7,7 @@
 import XCTest
 
 @testable import FixedSizeCollection
-@testable import TestSwiftBridge
+@testable import TestSwiftCBridge
 @testable import TestCSupport
 
 final class WithCTests: XCTestCase {
@@ -17,108 +17,57 @@ final class WithCTests: XCTestCase {
     //        try FixedSizeCollection<CInt>.storageInout()
     //    }
     
+    func testInitFromCArrays() {
+        //uint8_t random_provider_uint8_array[27];
+        //uint32_t random_provider_RGBA_array[9];
+        
+        let tmp_Array = FixedSizeCollection<Int32>._getFixedSizeCArrayAssumed(source: fsc_int32_array, boundToType: Int32.self)
+        let tC = FixedSizeCollection.makeFixedSizeCollection(count:tmp_Array.count , defaultsTo: 0, values: tmp_Array)
+        print(tC.count)
+//
+        XCTAssertEqual(tC[0], fsc_int32_array.0, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[1], fsc_int32_array.1, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[2], fsc_int32_array.2, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[3], fsc_int32_array.3, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[4], fsc_int32_array.4, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[5], fsc_int32_array.5, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[6], fsc_int32_array.6, "collection did not retrieve expected value")
+        
+        
+        let testCT = FixedSizeCollection(asCopyOfTuple:fsc_int32_array, ofType: Int32.self)
+        
+        XCTAssertEqual(testCT[0], fsc_int32_array.0, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[1], fsc_int32_array.1, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[2], fsc_int32_array.2, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[3], fsc_int32_array.3, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[4], fsc_int32_array.4, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[5], fsc_int32_array.5, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[6], fsc_int32_array.6, "collection did not retrieve expected value")
+        
+    }
     
-    func rawBufferPointerPrint() throws {
+    
+    func testRawBufferPointerPrint() throws {
         try FixedSizeCollection<CInt>.rawBufferPointerPrint()
     }
     
-    func mutableRawBufferPointerPrint() throws {
+    func testMutableRawBufferPointerPrint() throws {
         try FixedSizeCollection<CInt>.mutableRawBufferPointerPrint()
     }
     
-    func boundBufferPointerPrint() throws {
+    func testBoundBufferPointerPrint() throws {
         try FixedSizeCollection<CInt>.boundBufferPointerPrint()
     }
     
-    func boundMutableBufferPointerPrint() throws {
+    func testBoundMutableBufferPointerPrint() throws {
         try FixedSizeCollection<CInt>.boundMutableBufferPointerPrint()
     }
     
-    func boundPointerPrint() throws {
+    func testBoundPointerPrint() throws {
         try FixedSizeCollection<CInt>.boundPointerPrint()
     }
     
-    func boundMutablePointerPrint() throws {
+    func testBoundMutablePointerPrint() throws {
         try FixedSizeCollection<CInt>.boundMutablePointerPrint()
-    }
-    
-    
-    func testPointerPassing() {
-        //swift test --filter WithCTests.testPointerPassing
-        //https://developer.apple.com/documentation/swift/calling-functions-with-pointer-parameters
-        //https://github.com/apple/swift/pull/15543
-        
-        func takesAnUnsafePointer(_ p: UnsafePointer<CInt>?)  {
-            // ...
-        }
-        
-        func takesAnUnsafeMutablePointer(_ p: UnsafeMutablePointer<CInt>?)  {
-            // ...
-        }
-        
-        //void acknowledge_int_buffer(int* array, const size_t n);
-        //void acknowledge_int_buffer_const(const int* values, const size_t n);
-        
-        
-        
-        let constIntArray: [CInt] = [1, 2, 3]
-        let constIntAlone: CInt = 42
-        var mIntArray: [CInt] = [2, 4, 6]
-        var mIntAlone: CInt = 84
-        
-        // ---------------------------------------------------------------------
-        // ----------------------- const + swift
-        
-        //takesAnUnsafePointer(constIntAlone) //<= failed when array didn't
-        takesAnUnsafePointer(constIntArray) //pass
-        
-        //takesAnUnsafeMutablePointer(&constIntAlone) //expected fail
-        //takesAnUnsafeMutablePointer(&constIntArray) //expected fail
-        
-        // ---------------------------------------------------------------------
-        // ----------------------- mutable + swift
-        //takesAnUnsafePointer(mIntAlone) //<= failed when array didn't
-        takesAnUnsafePointer(mIntArray)  //pass
-        
-        takesAnUnsafeMutablePointer(&mIntAlone) //<= inconsistent but appreciated pass
-        takesAnUnsafeMutablePointer(&mIntArray) //pass
-        
-        // ---------------------------------------------------------------------
-        // ----------------------- const + C
-        //void acknowledge_cint_buffer_const(const int* values, const size_t n);
-        
-        //error: cannot convert value of type 'CInt' (aka 'Int32')
-        //to expected argument type 'UnsafePointer<Int32>?'
-        
-        //acknowledge_cint_buffer_const(constIntAlone, 1) //<= consistent fail
-        
-        //error: cannot pass immutable value as inout argument:
-        //'constIntAlone' is a 'let' constant
-        
-        acknowledge_cint_buffer_const(constIntArray, 3) //<= C treated as inout
-        //                                                //   unlike the Swift
-        
-        //error: cannot pass immutable value as inout argument:
-        //'constIntArray'/'constIntAlone' is a 'let' constant
-        
-        //(&constIntAlone, 1) //expected fail
-        //acknowledge_cint_buffer(&constIntArray, 3) //expected fail
-        
-        // ---------------------------------------------------------------------
-        // ----------------------- mutable + C
-        //void acknowledge_int_buffer_const(const int* values, const size_t n);
-        
-        //error: cannot convert value of type 'CInt' (aka 'Int32')
-        //to expected argument type 'UnsafePointer<Int32>?'
-        
-        //acknowledge_cint_buffer_const(mIntAlone, 1) //<= consistent fail
-        
-        
-        acknowledge_cint_buffer_const(mIntArray, 3) //<= newly unexpected fail
-        
-        acknowledge_cint_buffer(&mIntAlone, 1) //<= inconsistent but appreciated pass
-        acknowledge_cint_buffer(&mIntArray, 3)
-        
-        XCTAssertEqual(5, 5, "everything's fine.")
     }
 }
