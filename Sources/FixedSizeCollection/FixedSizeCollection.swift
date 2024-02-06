@@ -57,7 +57,7 @@ extension FixedSizeCollection {
             Data(buffer: pointer)
         }
     
-        assert(self.count <= Self.getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
+        assert(self.count <= Self._getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
     }
     
     @inlinable
@@ -73,6 +73,9 @@ extension FixedSizeCollection {
     public init(_ count: Int, defaultsTo d: Element, _ values:Element...) {
         self = Self.init(count, defaultsTo: d, values: values)
     }
+
+        //Implies a potential "asView" (fingers crossed.)
+
     
     
     // ---- Inferred Count
@@ -85,7 +88,7 @@ extension FixedSizeCollection {
         }
         self.count = values.count
         
-        assert(self.count <= Self.getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
+        assert(self.count <= Self._getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
     }
     
     @inlinable
@@ -107,7 +110,17 @@ extension FixedSizeCollection {
         self._storage = Data(buffer: pointer)
         self.count = pointer.count
         
-        assert(self.count <= Self.getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
+        assert(self.count <= Self._getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
+    }
+
+    public init<T>(asCopyOfTuple source:T, ofType:Element.Type, defaultsTo d: Element? = nil) {
+        let tmp = Self._getFixedSizeCArrayAssumed(source: source, boundToType: Element.self)
+        self = Self.makeFixedSizeCollection(count:tmp.count , defaultsTo: d, values: tmp)
+        do {
+            let _ = try Self._confimSizeOfTuple(tuple: source, expectedCount: self.count)
+        } catch {
+            assertionFailure("tuple count and collection count don't match. tuple was likely not homogenous or not of the type indicated.")
+        }
     }
     
     
@@ -117,80 +130,11 @@ extension FixedSizeCollection {
         self._defaultValue = d
         self._storage = storage
         self.count = count
-        
-        assert(self.count <= Self.getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
-    }
-    
-    //TODO: Initialize/Factory method COPY that works well retrieving copy of C array
-    /*
-     public func makeArrayOfRandomIntClosure(count:Int) -> [Int] {
-     //Count for this initializer is really MAX count possible, function may return an array with fewer items defined.
-     //both buffer and initializedCount are inout
-     let tmp = Array<CInt>(unsafeUninitializedCapacity: count) { buffer, initializedCount in
-     //C:-- void random_array_of_zero_to_one_hundred(int* array, const size_t n);
-     random_array_of_zero_to_one_hundred(buffer.baseAddress, count)
-     initializedCount = count // if initializedCount is not set, Swift assumes 0, and the array returned is empty.
-     }
-     return tmp.map { Int($0) }
-     }
-     */
-}
+       
+        assert(self.count <= Self._getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
 
-//TODO: What is a DependenceToken (as seen in Array)
-extension FixedSizeCollection {
-
-    //https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5
-    //https://gcc.godbolt.org/z/Tq6zezrY4
-    @inlinable 
-    static func fastContains(l:N, h:N, x:N) -> Bool {
-        return UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)
     }
     
-    @inlinable
-    internal func _checkSubscript(_ position: N) -> Bool {
-        //(0..<count).contains(position)
-        Self.fastContains(l:0, h:count, x:position)
-    }
-    
-    @inlinable
-    internal func _checkSubscript(_ range: Range<N>) -> Bool {
-        Self.fastContains(l:0, h:count, x:range.lowerBound) && Self.fastContains(l:0, h:count, x:range.upperBound)
-        //(0..<count).contains(range.lowerBound) && (0..<count).contains(range.upperBound)
-    }
-    
-}
-
-//MARK: Helpers
-extension FixedSizeCollection {
-    
-    @inlinable
-    static func getVerifiedCount(storage:_Storage) -> N {
-        storage.withUnsafeBytes { bytes in
-            let tmpCount = bytes.count / MemoryLayout<Element>.stride
-            precondition(tmpCount * MemoryLayout<Element>.stride == bytes.count)
-            precondition(
-                Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Element>.alignment))
-            //Data leaves padding. TODO: is it a predictable amount? Seems to be 1
-            return tmpCount
-        }
-        
-    }
-    
-    @inlinable
-    internal func _sliceOfStorage(_ range: Range<N>) throws -> _Storage.SubSequence {
-        let startIndex = _storage.startIndex + _mStrideOffset(for: range.lowerBound)
-        let endIndex = _storage.startIndex + _mStrideOffset(for: range.upperBound)
-        return _storage[startIndex..<endIndex]
-    }
-    
-    @inlinable
-    internal var _mStrideFull: N { MemoryLayout<Element>.stride * count }
-    
-    @inlinable
-    internal var _mStrideElem: N { MemoryLayout<Element>.stride }
-    
-    @inlinable
-    internal func _mStrideOffset(for count: N) -> N { MemoryLayout<Element>.stride * count }
 }
 
 //What is the better way?

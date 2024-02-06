@@ -38,7 +38,7 @@ final class InitsNStorage: XCTestCase {
             )
         }
     }
-        
+    
     func testVariadicExplicitCountInit() {
         let expectedArray = [ 1, 2, 3, nil, nil ]
         let testCollection = FixedSizeCollection<Int?>(5, defaultsTo: nil, 1,2,3)
@@ -59,6 +59,34 @@ final class InitsNStorage: XCTestCase {
             XCTAssertEqual(
                 testCollection[i], baseArray[i], "collection did not retrieve expected value")
         }
+    }
+    
+    func testInitFromTuple() throws {
+        let baseTuple = (45,27,83,26,44,98,5)
+        
+        let tmp_Array = FixedSizeCollection<Int>._getFixedSizeCArrayAssumed(source: baseTuple, boundToType: Int.self)
+        let tC = FixedSizeCollection.makeFixedSizeCollection(count:tmp_Array.count , defaultsTo: 0, values: tmp_Array)
+        
+        
+        XCTAssertEqual(tC[0], baseTuple.0, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[1], baseTuple.1, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[2], baseTuple.2, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[3], baseTuple.3, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[4], baseTuple.4, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[5], baseTuple.5, "collection did not retrieve expected value")
+        XCTAssertEqual(tC[6], baseTuple.6, "collection did not retrieve expected value")
+        
+        
+        let testCT = FixedSizeCollection(asCopyOfTuple:baseTuple, ofType: Int.self)
+        
+        XCTAssertEqual(testCT[0], baseTuple.0, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[1], baseTuple.1, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[2], baseTuple.2, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[3], baseTuple.3, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[4], baseTuple.4, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[5], baseTuple.5, "collection did not retrieve expected value")
+        XCTAssertEqual(testCT[6], baseTuple.6, "collection did not retrieve expected value")
+        
     }
     
     func testExplicitCountCode() {
@@ -91,7 +119,7 @@ final class InitsNStorage: XCTestCase {
         //testValues are Ints.
         XCTAssertEqual(count, gVC, "count and storage size didn't work")
         
-        XCTAssertEqual(count, FixedSizeCollection<Int>.getVerifiedCount(storage:_storage), "Storage did not save the expected amount.")
+        XCTAssertEqual(count, FixedSizeCollection<Int>._getVerifiedCount(storage:_storage), "Storage did not save the expected amount.")
     }
     
     func testInferredCountCode() {
@@ -120,7 +148,7 @@ final class InitsNStorage: XCTestCase {
         //testValues are Ints.
         XCTAssertEqual(count, gVC, "count and storage size didn't work")
         
-        XCTAssertEqual(count, FixedSizeCollection<Int>.getVerifiedCount(storage:_storage), "Storage did not save the expected amount.")
+        XCTAssertEqual(count, FixedSizeCollection<Int>._getVerifiedCount(storage:_storage), "Storage did not save the expected amount.")
         
     }
     

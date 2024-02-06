@@ -21,11 +21,11 @@ let package = Package(
       name: "FixedSizeCollection"
     ),
     .target(
-      name: "TestSwiftBridge",
-      dependencies: ["TestCSupport"]
+      name: "TestSwiftCBridge",
+      dependencies: ["TestCSupport", "FixedSizeCollection"]
     ),
     .testTarget(
       name: "FixedSizeCollectionTests",
-      dependencies: ["FixedSizeCollection", "TestSwiftBridge", "TestCSupport"]),
+      dependencies: ["FixedSizeCollection", "TestSwiftCBridge", "TestCSupport"]),
   ]
 )

@@ -2,6 +2,13 @@
 
 See  https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 
+
+This FixedSizedCollection is intended to be an API on a bag of bytes service that will be able make a solid commitment to compiler that those bytes all exist and have a value of type Element and the size of that memory will not change for the lifetime of that FixedSizedCollection. That BytesService could be owned and managed by the FixedArrayCollection, or by something reliable a client offers up on initialization (a BufferView, e.g,).
+
+The FixedSizedCollection itself can then vend Views or Copies as needed. Those views or copies could be to its full collection or SubSequences.
+
+This could end up being a Protocol.
+
 ## Major Use Cases
 
 - Interfacing with C
@@ -9,6 +16,7 @@ See  https://forums.swift.org/t/approaches-for-fixed-size-arrays/
     - "guaranteed stack" 
     - Scratch Buffers Audio
     - Scratch Buffers Graphics
+    - Games, ECS backing (RealityKit, too)
 - ??? 
 
 ## Desired Specs to Support Use Cases
@@ -89,7 +97,7 @@ myExistingArrayOrArraySlice.withFixedMemory { fixedCollection in
 
 ### Storage Backed
 
-Others suggested, presumably with the idea of allocated memory behind them. [But maybe not](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/30)
+Others suggested, presumably with the idea of allocated memory behind them. [But maybe not](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/30)(Joe_Groff)
 
 ```
 var myArray:[Int, 10]
@@ -97,9 +105,16 @@ var myArray:[Int * 10], var myArray:[Int x 10], var Array<String>[3]
 Array<String>[3]
 var myArray(Int * 10) //has tuple implications
 struct FixedArray<T, N: Int> {...}.
-Int[3], Int[2][3],  Int[]
+Int[3], Int[2][3]
 var myArray:Int[_] = [1,2,3] for derived fixed size.
+var myArray:Int[ ] = [1,2,3]
 ```
+
+> † Two options about the "Int[]" syntax notation:
+>  - the type is inferred as Int[3] based on the subsequent initializing expression.
+>  - (this is how "int x[] = [1, 2, 3];" is inferred to be "int x[3]" in C).
+>  - this notation could be used as a synonym for the "normal" [Int] array.
+> -- [tera](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/86)
 
 ## Backing Memory: `Data`? Really?
 
@@ -146,6 +161,34 @@ Previous underlying storage concern:
 
 Tuples as the backing memory have been floated and rejected.  The feel on the street appears to be that this would come with too much baggage and the only reason it's been suggested is because that's what the C currently gets mapped to. 
 
+## Default Values
+
+A fixed size array needs to know what value to use if it's stuck with a location that it's been told to create (on init only) or clear without instruction as to a new value. Should that value simply be a required parameter on any function that could result in the ambiguity or a stored value for the instance? Or should the default value be a product of the associated type instead (zero for things that have one, nil for optionals...)
+
+Examples possibilities: 
+
+```
+//Comes with type
+[Int](7) //  => a FSC of 7 .zero
+var myFSC:[Int](7) = [3,2,1]. //=>  [3,2,1,0,0,0,0]
+[Int?](7) // => to a FSC of 7 nil
+[MyType](7) //=> leads to 7 what? Is there a protocol Elements need to conform to? 
+
+//set at init
+var myFSC:[Int](7, default: 5) = [3,2,1] // =>  [3,2,1,5,5,5,5]
+myFSC.insert(12) => [3,2,1,12,5,5,5]
+myFSC.clear() => [5,5,5,5,5,5,5]
+//params preceding ellipsis are the defaults. 2nd would create a pattern fill? 
+//with ... a random value from the defaults array? the next value? [tera](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/86)
+var x: Int[7] = [0 ...]
+var x: Int[7] = [3, 2, 1, 0 ...] 
+
+
+//require per function
+var myFSC:[Int](7, default: 5) = [3,2,1] // =>  [3,2,1,5,5,5,5]
+myFSC.insert(12, atFirstLocationOf: 5) //=> [3,2,1,12,5,5,5]
+myFSC.setAll(to:5) //=> [5,5,5,5,5,5,5]
+```
 
 ## References
 

@@ -8,17 +8,21 @@ A done in this context means initial interface, no assurance on quality of imple
 
 
 - [ ] Must work well with C
-    - [ ] examples from C interop section
+    - [ ] examples from C interop section below
+    - [ ] Fancy inits
+        - [x] init directly from C fixed with array definition. (and test [x])
+        - [ ] ?? FixedSizeCollection(copyOf: TypedPointer, count:N)
+        - [ ] be able to put back into C var
+        - [x] init from buffer view  (and test [x])
     - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
     - [ ] ?? looking for zeros / default value as nil?
-    - [ ] pass an individual Element or slice to a C function.
-    - [ ] FixedSizeCollection(copyOf: TypedPointer, count:N)
-    - [ ] ?? Misc Options from the post
-        - [ ] ?? importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array?
-        - - [ ] ?? behavior based on language version mode, so that Swift 6 code sees the imported field in its array form?
-    - [ ] Add nullability flags in example C code (most modern?), but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18). 
+    - [ ] pass an individual element or slice to a C function.
+- [ ] Default Values
+    - [ ] ?? Typed based auto set?
+    - [ ] ?? Stored value? 
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
-    - [  ] & pointing to typed version of storage
+    - [  ] ?? & pointing to typed version of storage?
+        - [  ] if not, different prefix that returns pointer to storage? 
     - [ ~ ] subscripts 
         - [x] add bounds checking as subscripts should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift) bounds check.
         - [x] subscript check function
@@ -34,15 +38,17 @@ A done in this context means initial interface, no assurance on quality of imple
         - [x] proto sunc
         - [x] tests [x] gunc [x] sunc
     - [ ] No `append` for now. Makes no sense for the _Storage type. But yes an insert on FSC with optional Element type that will look for a default value to replace.
+    - [ ] insert based on result of first(where:) for default or given value.
     - [x] variadic inits
         - [x] written
         - [x] tests
     - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?
-        - [ ] get subsequence range, @inlinable and self.defaultValue ans SubSequence
+        - [ ] get subsequence range @inlinable
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
 - [ ] matrix[0][24] style init of some format
 - [ ] matrix access
-
+- [ ] Integration into Swift (Longer Term)
+    - [ ] what would it take to replace Tuple as the Type Of Choice for C arrays? 
 
 ## Documentation
 
@@ -62,6 +68,7 @@ A done in this context means initial interface, no assurance on quality of imple
 -  ~~ [ ] in a package manager how to have a per file target inclusion? (testing functions) ~~
 - [x] separate testing code C and Swift Bridge for testing code C into own targets 
     - [ ] is this best approach for using C (C++?) with XCTest
+- [ ] All the C is currently just for testing, but should add nullability(most modern?), but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18) so folks referring to test library for application ideas can have that as a reference.
 
 ## Repo Meta
 - [x] [swift-format](https://github.com/apple/swift-format/) CLI installed & ran with default rules.
@@ -116,6 +123,8 @@ A done in this context means initial interface, no assurance on quality of imple
 - [ ] [working with large C array](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
 
 - [ ] [working with global C arrays](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1).
+
+- ~~[ ] ?? importing C array fields twice, once under their own fieldName as the existing homogeneous tuple representation, and again as fieldNameArray or something similar as a fixed size array?~~ Not for now. 
 
 [SysEx messages in CoreMIDI](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25)
 
