@@ -9,6 +9,16 @@ import XCTest
     
 final class AccessingAndUpdating: XCTestCase {
 
+  //MARK: Bounds Checkers
+  func testFastContainsInt() {
+    let h = 50, l = -4
+    let valuesToTest = Array(l-h...h+h)
+    for _ in 0...100 {
+      let i = valuesToTest.randomElement()!
+      XCTAssertEqual(FixedSizeCollection<Int>.fastContains(l:l, h:h, x:i), (l..<h).contains(i), "fastContains and .contains not same result" )
+    }
+  }
+
   //MARK: Getters
 
   func testIndividualAccess() {

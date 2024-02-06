@@ -130,8 +130,9 @@ extension FixedSizeCollection {
         self._defaultValue = d
         self._storage = storage
         self.count = count
-        
+       
         assert(self.count <= Self._getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
+
     }
     
 }
