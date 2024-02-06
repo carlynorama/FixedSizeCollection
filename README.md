@@ -3,7 +3,7 @@
 See  https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 
 
-This FixedSizedCollection is intended to be an API on a bag of bytes service that will be able make a solid commitment to compiler that those bytes all exist and have a value of type Element and the size of that memory will not change for the lifetime of that FixedSizedCollection. That BytesService could be owned and managed by the FixedArrayCollection, or by something reliable a client offers up on initialization (a BufferView, e.g,).
+This FixedSizedCollection is intended to be an API on a bag of bytes service that will be able make a solid commitment to compiler that those bytes all exist and have a value of type Element and the size of that memory will not change for the lifetime of that FixedSizedCollection. That BytesService could be owned and managed by the FixedSizedCollection, or by something reliable a client offers up on initialization (a BufferView, e.g,).
 
 The FixedSizedCollection itself can then vend Views or Copies as needed. Those views or copies could be to its full collection or SubSequences.
 
@@ -36,6 +36,12 @@ All inits create copies into the types personal _Storage (currently Data). Poten
 ```
 
 Theses all have a duplicate overload where count can be inferred from the values submitted that also doesn't require a default set. 
+
+two inits only have inferred counts, but that could be changed. 
+```swift 
+ public init<T>(asCopyOfTuple source:T, ofType:Element.Type, defaultsTo d: Element? = nil)
+ public init(asCopy pointer:UnsafeBufferPointer<Element>, defaultsTo d: Element? = nil)
+ ```
 
 
 ## Sugar and Spellings
@@ -99,6 +105,8 @@ myExistingArrayOrArraySlice.withFixedMemory { fixedCollection in
 
 Others suggested, presumably with the idea of allocated memory behind them. [But maybe not](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/30)(Joe_Groff)
 
+Additional ideas are in the discussion of [Defaults](#default-values). 
+
 ```
 var myArray:[Int, 10]
 var myArray:[Int * 10], var myArray:[Int x 10], var Array<String>[3]
@@ -107,7 +115,7 @@ var myArray(Int * 10) //has tuple implications
 struct FixedArray<T, N: Int> {...}.
 Int[3], Int[2][3]
 var myArray:Int[_] = [1,2,3] for derived fixed size.
-var myArray:Int[ ] = [1,2,3]
+var myArray:Int[ ] = [1,2,3] †
 ```
 
 > † Two options about the "Int[]" syntax notation:
