@@ -97,12 +97,23 @@ A done in this context means initial interface, no assurance on quality of imple
     - https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
     - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
 
+## NonC Interop Targets
+
+> An example use-case is my voxel game which uses an ECS, all components store their data on globals and many of those components want to embed 32768 elements since that's the chunk size. Since the whole point is to have all that laid out in memory for cache-friendly access, having any indirection in a component defeats the purpose. [forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
+
+> It could also easily replace ManagedBuffer which would be a win in and of itself in my humble opinion.[forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
+
+> As a vector type backing [forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
+
+
 
 ## C interop targets
 
 - see: https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/59
 
 - [ ] (phantom non working const pointers, ghost in one devs machine?)
+
+- [ ] [working with large C array](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
 
 - [ ] [working with global C arrays](https://forums.swift.org/t/accessing-address-of-a-c-global-const-variable-cannot-pass-immutable-value-as-inout-argument/69468/1).
 
