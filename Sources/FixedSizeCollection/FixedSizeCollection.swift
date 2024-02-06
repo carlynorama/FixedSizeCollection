@@ -138,15 +138,24 @@ extension FixedSizeCollection {
 
 //TODO: What is a DependenceToken (as seen in Array)
 extension FixedSizeCollection {
+
+    //https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5
+    //https://gcc.godbolt.org/z/Tq6zezrY4
+    @inlinable 
+    static func fastContains(l:N, h:N, x:N) -> Bool {
+        return UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)
+    }
     
     @inlinable
     internal func _checkSubscript(_ position: N) -> Bool {
-        (0..<count).contains(position)
+        //(0..<count).contains(position)
+        Self.fastContains(l:0, h:count, x:position)
     }
     
     @inlinable
     internal func _checkSubscript(_ range: Range<N>) -> Bool {
-        (0..<count).contains(range.lowerBound) && (0..<count).contains(range.upperBound)
+        Self.fastContains(l:0, h:count, x:range.lowerBound) && Self.fastContains(l:0, h:count, x:range.upperBound)
+        //(0..<count).contains(range.lowerBound) && (0..<count).contains(range.upperBound)
     }
     
 }
