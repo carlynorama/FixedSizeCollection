@@ -12,6 +12,13 @@ import Foundation
 //TODO: What is a DependenceToken used for (as seen in Array)
 extension FixedSizeCollection {
     
+    //TellowKrinkle via Swift Forums, See TODO for link
+    @inlinable
+    internal static func fastContains(l:N, h:N, x:N) -> Bool {
+        //TODO: for what values of N will this work? Any Numeric?
+        UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)
+    }
+    
     @inlinable
     internal func _checkSubscript(_ position: N) -> Bool {
         (0..<count).contains(position)
