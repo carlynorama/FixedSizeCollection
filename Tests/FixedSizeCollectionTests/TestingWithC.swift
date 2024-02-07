@@ -13,9 +13,7 @@ import XCTest
 final class WithCTests: XCTestCase {
     
     
-    //    func storagePointerPrint() throws {
-    //        try FixedSizeCollection<CInt>.storageInout()
-    //    }
+    //MARK: CArrays
     
     func testInitFromCArrays() {
         //uint8_t random_provider_uint8_array[27];
@@ -46,6 +44,40 @@ final class WithCTests: XCTestCase {
         
     }
     
+    func testLoadIntoCArray() throws {
+        //uint8_t fsc_uint8_array[27]
+        let baseArray:[UInt8] = Array(repeating: UInt8.random(in: 0..<100), count: 27)
+        let tC = FixedSizeCollection(values:baseArray)
+        try tC.copyIntoTupleDestination(tuple:&fsc_uint8_array)
+        
+        XCTAssertEqual(baseArray[0], fsc_uint8_array.0, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[1], fsc_uint8_array.1, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[2], fsc_uint8_array.2, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[3], fsc_uint8_array.3, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[4], fsc_uint8_array.4, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[5], fsc_uint8_array.5, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[6], fsc_uint8_array.6, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[7], fsc_uint8_array.7, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[8], fsc_uint8_array.8, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[9], fsc_uint8_array.9, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[10], fsc_uint8_array.10, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[11], fsc_uint8_array.11, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[12], fsc_uint8_array.12, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[13], fsc_uint8_array.13, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[14], fsc_uint8_array.14, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[15], fsc_uint8_array.15, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[16], fsc_uint8_array.16, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[17], fsc_uint8_array.17, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[18], fsc_uint8_array.18, "collection did not retrieve expected value")
+        XCTAssertEqual(baseArray[26], fsc_uint8_array.26, "collection did not retrieve expected value")
+    }
+    
+    
+    //MARK: Unsafe
+    
+    //    func storagePointerPrint() throws {
+    //        try FixedSizeCollection<CInt>.storageInout()
+    //    }
     
     func testRawBufferPointerPrint() throws {
         try FixedSizeCollection<CInt>.rawBufferPointerPrint()

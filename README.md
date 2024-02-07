@@ -186,17 +186,20 @@ var myFSC:[Int](7) = [3,2,1]. //=>  [3,2,1,0,0,0,0]
 var myFSC:[Int](7, default: 5) = [3,2,1] // =>  [3,2,1,5,5,5,5]
 myFSC.insert(12) => [3,2,1,12,5,5,5]
 myFSC.clear() => [5,5,5,5,5,5,5]
-//params preceding ellipsis are the defaults. 2nd would create a pattern fill? 
-//with ... a random value from the defaults array? the next value? [tera](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/86)
+//1st: param preceding ellipsis are the defaults. 
+//2nd: last param before ellipsis is default *
 var x: Int[7] = [0 ...]
-var x: Int[7] = [3, 2, 1, 0 ...] 
-
+var x: Int[7] = [3, 2, 1, 0 ...]*
+var x: Int[7] = [3, 2, 1, rest: 0]**
 
 //require per function
 var myFSC:[Int](7, default: 5) = [3,2,1] // =>  [3,2,1,5,5,5,5]
 myFSC.insert(12, atFirstLocationOf: 5) //=> [3,2,1,12,5,5,5]
 myFSC.setAll(to:5) //=> [5,5,5,5,5,5,5]
 ```
+
+*[tera](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/86)
+**[wadetregaskis](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/90) inn response to the fact that the 2nd might imply "complete the pattern"  a [vinculum](https://en.wikipedia.org/wiki/Vinculum_%28symbol%29) might be an alternative.
 
 ## References
 
@@ -209,6 +212,7 @@ myFSC.setAll(to:5) //=> [5,5,5,5,5,5,5]
 - https://forums.swift.org/t/pitch-non-escapable-types-and-lifetime-dependency/69865
 - https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md
 - https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
+- https://forums.swift.org/t/pitch-safe-access-to-contiguous-storage/69888
 - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
 
 ### Code that does similar or related things

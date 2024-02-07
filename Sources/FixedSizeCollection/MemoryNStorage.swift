@@ -21,12 +21,12 @@ extension FixedSizeCollection {
     
     @inlinable
     internal func _checkSubscript(_ position: N) -> Bool {
-        (0..<count).contains(position)
+        Self.fastContains(l: 0, h: count, x: position)
     }
     
     @inlinable
     internal func _checkSubscript(_ range: Range<N>) -> Bool {
-        (0..<count).contains(range.lowerBound) && (0..<count).contains(range.upperBound)
+        Self.fastContains(l: 0, h: count, x: range.lowerBound) && Self.fastContains(l: 0, h: count, x: range.upperBound)
     }
     
 }
@@ -43,17 +43,8 @@ extension FixedSizeCollection {
                 Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Element>.alignment))
             return tmpCount
         }
-        
     }
-    
-    @inlinable
-    static func _confimSizeOfTuple<U>(tuple:U, expectedCount:N? = nil) throws -> N {
-        let count = Mirror(reflecting: tuple).children.count
-        if expectedCount != nil, expectedCount != count  {
-            throw FSCError.unknownError(message: "tuple's children and tuple's expected count not the same.")
-        }
-        return count
-    }
+
     
     @inlinable
     internal func _sliceOfStorage(_ range: Range<N>) throws -> _Storage.SubSequence {
@@ -71,21 +62,4 @@ extension FixedSizeCollection {
     @inlinable
     internal func _mStrideOffset(for count: N) -> N { MemoryLayout<Element>.stride * count }
 
-
-    //Less safe in the case that the memory is not in fact bound to this.
-    @inlinable
-    internal static func _getFixedSizeCArrayAssumed<T, R>(source:T, boundToType:R.Type, withCount count:N? = nil) -> [R] {
-        return Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R] in
-            let bufferPointer = rawPointer.assumingMemoryBound(to: boundToType)
-            return [R](bufferPointer)
-        }
-    }
-    
-    //TODO: Having difficulties. 
-//    @inlinable
-//    internal static func loadFixedSizeCArray<T, R>(source:T, ofType:R.Type) -> [R]? {
-//        Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R]? in
-//            rawPointer.baseAddress?.load(as: [R].self)
-//        }
-//    }
 }

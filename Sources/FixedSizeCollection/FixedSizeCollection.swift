@@ -70,7 +70,7 @@ extension FixedSizeCollection {
         self = Self.init(count, defaultsTo: d, values: initializer())
     }
     
-    public init(_ count: Int, defaultsTo d: Element, _ values:Element...) {
+    public init(_ count: Int, defaultsTo d: Element, values:Element...) {
         self = Self.init(count, defaultsTo: d, values: values)
     }
 
@@ -100,7 +100,7 @@ extension FixedSizeCollection {
         self = Self.makeFixedSizeCollection(defaultsTo:d, values: initializer())
     }
     
-    public init(defaultsTo d: Element? = nil, _ values:Element...) {
+    public init(defaultsTo d: Element? = nil, values:Element...) {
         self = Self.makeFixedSizeCollection(defaultsTo:d, values: values)
     }
     
@@ -117,7 +117,7 @@ extension FixedSizeCollection {
         let tmp = Self._getFixedSizeCArrayAssumed(source: source, boundToType: Element.self)
         self = Self.makeFixedSizeCollection(count:tmp.count , defaultsTo: d, values: tmp)
         do {
-            let _ = try Self._confimSizeOfTuple(tuple: source, expectedCount: self.count)
+            let _ = try Self._confirmSizeOfTuple(tuple: source, expectedCount: self.count)
         } catch {
             assertionFailure("tuple count and collection count don't match. tuple was likely not homogenous or not of the type indicated.")
         }
