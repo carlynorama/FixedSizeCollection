@@ -10,20 +10,14 @@ import Foundation
 public struct FixedSizeCollection<Element>: RandomAccessCollection {
     public typealias N = Int
     public typealias _Storage = Data  //Could be buffer or storage some day.
-                                      //TODO: buffer vs storage in Array vs Collection semantics
+                                      //TODO: how to set this up to be a StorageView once available. 
     
     public let count: N  //Unresolved. Int, UInt, CInt... For now starting with Int.
     public var startIndex: Int { 0 }
     public var endIndex: Int { count }
     
-    //MAY GO AWAY!!!
-    //TODO: Double Optional Possible
-    //- for use in pulling in arrays from C where 0 may need to be nil
-    //- or inserts to replace append where "next available spot that == default" might be handy.
-    //- or "nil out this value" when communicating with a language that doesn't have nil.
-    //But not everyone may need those functions, and if you don't having to set it is annoying.
-    //Don't love this. Could be required on those functions and initializers instead.
-    let _defaultValue: Element?
+    @inlinable
+    public var range: Range<N> { 0..<count }
     
     //What is the best storage type?
     
@@ -45,9 +39,8 @@ extension FixedSizeCollection {
     
     //Truncates.
     //TODO: probably should ask what the desired behavior is.
-    public init(_ count: Int, defaultsTo d: Element, values:[Element]) {
+    public init(_ count: Int, fillValue d:Element, values:[Element]) {
         self.count = count
-        self._defaultValue = d
         var result = values.prefix(count)
         //if result.count > count { return nil }
         for _ in 0..<(count - result.count) {
@@ -61,27 +54,24 @@ extension FixedSizeCollection {
     }
     
     @inlinable
-    static func makeFixedSizeCollection(count:N, defaultsTo d: Element? = nil, values:[Element]) -> FixedSizeCollection {
-        Self.init(defaultsTo: d, values:values)
+    static func makeFixedSizeCollection(count:N, fillValue d:Element, values:[Element]) -> FixedSizeCollection {
+        Self.init(count, fillValue:d, values:values)
     }
     
     
-    public init(_ count: Int, defaultsTo d: Element, initializer: () -> [Element] = { [] }) {
-        self = Self.init(count, defaultsTo: d, values: initializer())
+    public init(_ count: Int, fillValue d: Element, initializer: () -> [Element] = { [] }) {
+        self = Self.init(count, fillValue: d, values: initializer())
     }
     
-    public init(_ count: Int, defaultsTo d: Element, values:Element...) {
-        self = Self.init(count, defaultsTo: d, values: values)
+    public init(_ count: Int, fillValue d: Element, values:Element...) {
+        self = Self.init(count, fillValue: d, values: values)
     }
 
         //Implies a potential "asView" (fingers crossed.)
-
-    
     
     // ---- Inferred Count
     
-    public init(defaultsTo d: Element? = nil, values:[Element]) {
-        self._defaultValue = d
+    public init(_ values:[Element]) {
         var tmp = values
         self._storage = tmp.withUnsafeMutableBufferPointer { pointer in
             Data(buffer: pointer)
@@ -92,30 +82,32 @@ extension FixedSizeCollection {
     }
     
     @inlinable
-    static func makeFixedSizeCollection(defaultsTo d: Element? = nil, values:[Element]) -> FixedSizeCollection {
-        Self.init(defaultsTo: d, values:values)
+    static func makeFixedSizeCollection(_ values:[Element]) -> FixedSizeCollection {
+        Self.init(values)
     }
     
-    public init(defaultsTo d: Element? = nil, initializer: () -> [Element]) {
-        self = Self.makeFixedSizeCollection(defaultsTo:d, values: initializer())
+    public init(fillValue d: Element? = nil, initializer: () -> [Element]) {
+        self = Self.makeFixedSizeCollection(initializer())
     }
     
-    public init(defaultsTo d: Element? = nil, values:Element...) {
-        self = Self.makeFixedSizeCollection(defaultsTo:d, values: values)
+    public init(_ values:Element...) {
+        self = Self.makeFixedSizeCollection(values)
     }
     
     //Implies a potential "asView" (fingers crossed.)
-    public init(asCopy pointer:UnsafeBufferPointer<Element>, defaultsTo d: Element? = nil) {
-        self._defaultValue = d
+    public init(asCopy pointer:UnsafeBufferPointer<Element>) {
         self._storage = Data(buffer: pointer)
         self.count = pointer.count
         
         assert(self.count <= Self._getVerifiedCount(storage:_storage), "Storage did not reserve enough room.")
     }
 
-    public init<T>(asCopyOfTuple source:T, ofType:Element.Type, defaultsTo d: Element? = nil) {
+    public init<T>(asCopyOfTuple source:T, ofType:Element.Type) {
+        //There is a safer version that goes through array.
+        //It confirms the type.
+        //_tupleAsArray<U, T>(tuple:U, isType:T.Type)
         let tmp = Self._getFixedSizeCArrayAssumed(source: source, boundToType: Element.self)
-        self = Self.makeFixedSizeCollection(count:tmp.count , defaultsTo: d, values: tmp)
+        self = Self.makeFixedSizeCollection(tmp)
         do {
             let _ = try Self._confirmSizeOfTuple(tuple: source, expectedCount: self.count)
         } catch {
@@ -125,9 +117,8 @@ extension FixedSizeCollection {
     
     
     internal
-    init(storage: _Storage, as: Element.Type, count:N, defaultsTo d: Element? = nil)
+    init(storage: _Storage, as: Element.Type, count:N, fillValue d: Element? = nil)
     {
-        self._defaultValue = d
         self._storage = storage
         self.count = count
        
