@@ -37,7 +37,10 @@ A done in this context means initial interface, no assurance on quality of imple
         - [x] proto sunc
         - [x] tests [x] gunc [x] sunc
     - [ ] No `append` for now. Makes no sense for the _Storage type. But yes an insert on FSC with optional Element type that will look for a default value to replace.
-    - [ ] insert based on result of first(where:) for default or given value.
+        - [ ] replace(first: E, with: E)
+        - [ ] replace(at: N, with: E)
+        - [ ] replace(at: R<N>, with: E)
+        - [ ] replace(at: R<N>, with: [E]) 
     - [x] variadic inits
         - [x] written
         - [x] tests
