@@ -110,6 +110,21 @@ final class ReplaceNUpdate: XCTestCase {
                 tC[i], 63, "did not retrieve expected value at \(i)")
         }
     }
+    
+    func testReplaceAll() throws {
+        let baseArray: [Int32] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        let newValue: Int32 = 63
+    
+        //let baseArray = [1, 2, 3, 7]
+        var tC = FixedSizeCollection<Int32> { baseArray }
+        measure {
+            tC.replaceAll(with: newValue)
+        }
+        for i in tC.range {
+            XCTAssertEqual(
+                tC[i], 63, "did not retrieve expected value at \(i)")
+        }
+    }
 
     func testEBIntergerClear() {
         let baseArray: [Int32] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

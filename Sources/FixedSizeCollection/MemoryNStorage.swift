@@ -1,6 +1,6 @@
 //
 //  MemoryNStroage.swift
-//  
+//
 //
 //  Created by Carlyn Maw on 2/6/24.
 //
@@ -26,7 +26,10 @@ extension FixedSizeCollection {
     
     @inlinable
     internal func _checkSubscript(_ range: Range<N>) -> Bool {
-        Self.fastContains(l: 0, h: count, x: range.lowerBound) && Self.fastContains(l: 0, h: count, x: range.upperBound)
+        if range == self.range { return true } else {
+            //Note: fC and .contains fail when range == self.range
+            return Self.fastContains(l: 0, h: count, x: range.lowerBound) && Self.fastContains(l: 0, h: count, x: range.upperBound)
+        }
     }
     
 }
@@ -44,7 +47,7 @@ extension FixedSizeCollection {
             return tmpCount
         }
     }
-
+    
     
     @inlinable
     internal func _sliceOfStorage(_ range: Range<N>) throws -> _Storage.SubSequence {
@@ -61,5 +64,5 @@ extension FixedSizeCollection {
     
     @inlinable
     internal func _mStrideOffset(for count: N) -> N { MemoryLayout<Element>.stride * count }
-
+    
 }
