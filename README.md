@@ -213,6 +213,7 @@ myFSC.setAll(to:5) //=> [5,5,5,5,5,5,5]
 - https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md
 - https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
 - https://forums.swift.org/t/pitch-safe-access-to-contiguous-storage/69888
+- https://forums.swift.org/t/pitch-synchronous-mutual-exclusion-lock/69889
 - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
 
 ### Code that does similar or related things

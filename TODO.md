@@ -16,12 +16,13 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
     - [ ] ?? looking for zeros / default value as nil?
     - [ ] pass an individual element or slice to a C function.
-- [ ] Default Values
-    - [ ] ?? Typed based auto set?
-    - [ ] ?? Stored value? 
+- [ ] Default Values initial call
+    - [ ] ~~?? Stored value?~~ remove stored value in favor of explicit functions
+    - [ ] enable certain methods for when Element is `ExpressibleByIntegerLiteral` or Optional
+    - - ~~[ ] default is a keyword, is there a better label ~~ no longer going to be a thing. 
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
-    - [  ] ?? & pointing to typed version of storage?
-        - [  ] if not, different prefix that returns pointer to storage? 
+    - [  ] ?? & pointing to typed version of storage? (see ?? on Unsafe)
+        - [  ] if not, different prefix that returns pointer to storage? see 
     - [ ~ ] subscripts 
         - [x] add bounds checking as subscripts should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift) bounds check.
         - [x] subscript check function
@@ -46,7 +47,16 @@ A done in this context means initial interface, no assurance on quality of imple
         - [x] written
         - [x] tests
     - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?
+    - [~] the withUnsafes*
+       [x] all implmented
+       [x] all tested
+       [] ?? I have them pointing to _storage, right with that spelling? see & Question.
         - [ ] get subsequence range @inlinable
+- [ ] mask, flood and clear
+    - [ ] for .zero and nil defined Elements allow .clear() and .clear(at:)
+    - [ ] .flood(with:) and
+    - [ ] rename replace(at: R<N>, with: E) to .flood(range:with:) vs replace
+    - [ ] some kind of [Bool][Element] zip feature, maybe called mask. TBD. 
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
 - [ ] matrix[0][24] style init of some format
 - [ ] matrix access
@@ -81,13 +91,14 @@ A done in this context means initial interface, no assurance on quality of imple
             swift-format format -r -i
             swift-format lint -r . 
         ``` 
-- [   ] add plugin? it's not in the other Swift repos, which do official Swift projects actually use? 
+- [ ] add plugin? it's not in the other Swift repos, which do official Swift projects actually use? 
 - [ ] platform info in Package.swift, TBD how far back? 
 - [ ] what .clang-format file to use? 
 
 ## Misc & General Research Q's 
-- [ ] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up.
-- [ ] default is a keyword, is there a better label 
+- [ ] Hmm... this should be [~Copyable](https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md) shouldn't it? 
+    - Loose ability to conform to RandomAccessCollection?
+
 - [ ] Iterators and Stream, what comes with Random Access Collection? 
 - [ ] SIL Builtins,  @inline(always), @alwaysEmitIntoClient for making Matrix type (https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/9)
 - [ x ] [faster bounds comparator](https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5)`UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)` by TellowKrinkle
@@ -95,6 +106,8 @@ A done in this context means initial interface, no assurance on quality of imple
     - [] [Which Types](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/19)?(CXType_ConstantArray, CXType_Vector, CXType_IncompleteArray, CXType_VariableArray, CXType_DependentSizedArray)
     - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
 - [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
+- [x] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up. 
+    - That was the [Variadic Generics](https://forums.swift.org/t/variadic-generics/54511) thing. Already using it. 
 
 - [ ] seems related:
     - https://forums.swift.org/t/pitch-introduce-for-borrow-and-for-inout-to-provide-non-copying-collection-iteration/62549
