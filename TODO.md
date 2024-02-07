@@ -103,6 +103,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
     - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
     - https://forums.swift.org/t/short-array-optimisation/68082/3 
+    - https://forums.swift.org/t/pitch-synchronous-mutual-exclusion-lock/69889
 
 ## NonC Interop Targets
 

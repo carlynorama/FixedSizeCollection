@@ -6,17 +6,24 @@
 //
 
 extension FixedSizeCollection {
-  //TODO: currently unchecked, because _checkSubscript(range)
-  //would not catch a desync between _storage and count.
-  public func copyValuesAsArray() throws -> [Element] {
-    guncCopyRangeAsArray(0..<count)
-  }
-
-  //Same as current subscript.
-  public func copyValuesAsArray(range: Range<N>) throws -> [Element] {
-    guard _checkSubscript(range) else {
-      throw FSCError.outOfRange
+    //currently unchecked, because _checkSubscript(range)
+    //would not catch a desync between _storage and count.
+    public func copyValuesAsArray() throws -> [Element] {
+        guncCopyRangeAsArray(0..<count)
     }
-    return guncCopyRangeAsArray(range)
-  }
+    
+    //Same as current subscript.
+    public func copyValuesAsArray(range: Range<N>) throws -> [Element] {
+        guard _checkSubscript(range) else {
+            throw FSCError.outOfRange
+        }
+        return guncCopyRangeAsArray(range)
+    }
+    
+    //TODO: Force user to confirm the type explicitly or no?
+    public func copyIntoTupleDestination<U>(tuple:inout U) throws {
+        //checks are in _load function
+        let tupleCount = try Self._confirmSizeOfTuple(tuple: tuple)
+        try _loadIntoTuple(tuple: &tuple, count:tupleCount, type:Element.self)
+    }
 }

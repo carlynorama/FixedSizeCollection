@@ -8,16 +8,48 @@
 import Foundation
 
 
-extension FixedSizeCollection {
+internal extension FixedSizeCollection {
+    
+    //MARK: Utilities
+    
+    @inlinable
+    static func _confirmSizeOfTuple<U>(tuple:U, expectedCount:N? = nil) throws -> N {
+        let count = Mirror(reflecting: tuple).children.count
+        if expectedCount != nil, expectedCount != count  {
+            throw FSCError.unknownError(message: "tuple's children and tuple's expected count not the same.")
+        }
+        return count
+    }
     
     
-    internal func _loadIntoTuple<U>(tuple: inout U, count:N, type:N.Type) throws {
+    //MARK: Getting Out
+    
+    //Less safe in the case that the memory is not in fact bound to this.
+    @inlinable
+    static func _getFixedSizeCArrayAssumed<T, R>(source:T, boundToType:R.Type, withCount count:N? = nil) -> [R] {
+        return Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R] in
+            let bufferPointer = rawPointer.assumingMemoryBound(to: boundToType)
+            return [R](bufferPointer)
+        }
+    }
+    
+    //TODO: Having difficulties.
+//    @inlinable
+//    internal static func loadFixedSizeCArray<T, R>(source:T, ofType:R.Type) -> [R]? {
+//        Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R]? in
+//            rawPointer.baseAddress?.load(as: [R].self)
+//        }
+//    }
+    
+    //MARK: Putting Back
+    @inlinable
+    func _loadIntoTuple<U, T>(tuple: inout U, count:N, type:T.Type) throws {
         precondition(count == self.count)
         precondition(type == Element.self)
-        precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<N>.stride * count)
+        precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<T>.stride * count)
 
         Swift.withUnsafeMutablePointer(to: &tuple) { tuplePointer in
-            precondition(Int(bitPattern: tuplePointer).isMultiple(of: MemoryLayout<N>.alignment))
+            precondition(Int(bitPattern: tuplePointer).isMultiple(of: MemoryLayout<T>.alignment))
             tuplePointer.withMemoryRebound(to: Element.self, capacity: count) { reboundPointer in
                 let bufferPointer = UnsafeMutableBufferPointer(start: UnsafeMutablePointer(reboundPointer), count: count)
                 for i in stride(from: bufferPointer.startIndex, to: bufferPointer.endIndex, by: 1) {
@@ -28,9 +60,10 @@ extension FixedSizeCollection {
         }
     }
     
-    //YOLO.
-    //Don't use this.
-    internal func _memCopyToTuple<U>(tuple: inout U, count:Int, type:N.Type) throws {
+    //YOLO transfer.
+    //Don't use this. Especially for anything more complicated than a Int, which you might get away with, but I didn't say that.
+    @inlinable
+    func _memCopyToTuple<U>(tuple: inout U, count:Int, type:N.Type) throws {
         precondition(count == self.count)
         precondition(type == Element.self)
         precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<N>.stride * count)
@@ -44,6 +77,5 @@ extension FixedSizeCollection {
             
         }
     }
-    
     
 }
