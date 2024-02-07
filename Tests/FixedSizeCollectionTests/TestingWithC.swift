@@ -15,12 +15,20 @@ final class WithCTests: XCTestCase {
     
     //MARK: CArrays
     
+    func testTupleEnforcement() throws {
+        let tmp_array = try FixedSizeCollection<Int32>._tupleAsArray(tuple: fsc_int32_array, isType: Int32.self)
+        
+        FixedSizeCollection(tmp_array)
+       
+        
+    }
+    
     func testInitFromCArrays() {
         //uint8_t random_provider_uint8_array[27];
         //uint32_t random_provider_RGBA_array[9];
         
         let tmp_Array = FixedSizeCollection<Int32>._getFixedSizeCArrayAssumed(source: fsc_int32_array, boundToType: Int32.self)
-        let tC = FixedSizeCollection.makeFixedSizeCollection(count:tmp_Array.count , defaultsTo: 0, values: tmp_Array)
+        let tC = FixedSizeCollection.makeFixedSizeCollection(count:tmp_Array.count , fillValue: 0, values: tmp_Array)
         print(tC.count)
 //
         XCTAssertEqual(tC[0], fsc_int32_array.0, "collection did not retrieve expected value")
@@ -47,7 +55,7 @@ final class WithCTests: XCTestCase {
     func testLoadIntoCArray() throws {
         //uint8_t fsc_uint8_array[27]
         let baseArray:[UInt8] = Array(repeating: UInt8.random(in: 0..<100), count: 27)
-        let tC = FixedSizeCollection(values:baseArray)
+        let tC = FixedSizeCollection(baseArray)
         try tC.copyIntoTupleDestination(tuple:&fsc_uint8_array)
         
         XCTAssertEqual(baseArray[0], fsc_uint8_array.0, "collection did not retrieve expected value")

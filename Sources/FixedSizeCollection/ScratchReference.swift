@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Carlyn Maw on 2/6/24.
 //
@@ -11,10 +11,38 @@ import Foundation
 //Here for reference.
 
 
+// protocol P {}
+// struct A: P {}
+// struct B: P {}
+
+// func foo<each T>(_ value: repeat each T) -> (repeat each T) where repeat each T: P {
+//     (repeat each value)
+// }
+
+// func test<each T>(_ value: repeat each T) -> (repeat each T) where repeat each T: P {
+//     let tuple = (repeat foo(each value))
+//     return (repeat foo(each tuple))
+// }
+// func typeTest() -> some P {
+//     let y = test(A(), B(), B())
+// } 
+
+//func buildBlock<each Content>(_ content: repeat each Content) 
+//-> TupleView<(repeat each Content)> where repeat each Content : View
+
 
 fileprivate extension FixedSizeCollection {
+    
+    //MARK: amazing. Go parameter packs. 
+    static func eachFirst<FirstT: Collection, each T: Collection>(_ firstItem: FirstT, _ item: repeat each T) -> (repeat (each T).Element?) {
+        return (repeat (each item).first)
+    }
 
-  //MARK: Assembler
+    func pairUp2<each T, each U>(firstPeople: repeat each T, secondPeople: repeat each U) -> (repeat (first: each T, second: each U)) {
+        return (repeat (each firstPeople, each secondPeople))
+    }
+    
+    //MARK: Assembler
     
     //This function is the simpler case than the assembler, but the assembler uses this pattern
     // of making a rawBuffer that lasts just for the duration of the function.
@@ -169,7 +197,7 @@ fileprivate extension FixedSizeCollection {
     
     
     //TODO: Initialize/Factory method COPY that works well retrieving copy of C array
-
+    
     //  public func makeFromSecretArray(count:Int) -> [Int] {
     //  //Count for this initializer is really MAX count possible, function may return an array with fewer items defined.
     //  //both buffer and initializedCount are inout
@@ -180,9 +208,9 @@ fileprivate extension FixedSizeCollection {
     //  }
     //  return tmp.map { Int($0) }
     //  }
-
-
-
+    
+    
+    
     
     
     
@@ -197,7 +225,7 @@ fileprivate protocol HasMyNumber {
 fileprivate func withPointerToMyNumber<T:HasMyNumber, R>(example:T, body:(UnsafeRawPointer) -> R) -> R {
     withUnsafePointer(to: example) { (ptr: UnsafePointer<T>) in
         let rawPointer = (UnsafeRawPointer(ptr) + MemoryLayout<T>.offset(of: \.myNumber)!)
-       return body(rawPointer)
+        return body(rawPointer)
     }
 }
 

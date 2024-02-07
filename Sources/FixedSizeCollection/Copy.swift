@@ -9,7 +9,7 @@ extension FixedSizeCollection {
     //currently unchecked, because _checkSubscript(range)
     //would not catch a desync between _storage and count.
     public func copyValuesAsArray() throws -> [Element] {
-        guncCopyRangeAsArray(0..<count)
+        guncCopyRangeAsArray(self.range)
     }
     
     //Same as current subscript.

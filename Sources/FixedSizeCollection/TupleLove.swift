@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Carlyn Maw on 2/6/24.
 //
@@ -12,6 +12,17 @@ internal extension FixedSizeCollection {
     
     //MARK: Utilities
     
+    //Can't use parameter packs to enforce single type conformance yet.
+    static func newRegularTuple<each T>(_ item: repeat each T) -> (repeat each T) {
+        //return (repeat each item as? E) for example, not a thing.
+        return (repeat each item)
+    }
+    
+    //Not a thing yet...
+    // static func newRegularTuple<each T, E>(ofType:E.Type, _ item: repeat each T) -> (repeat each T) {
+    //     return (repeat each item as? E)
+    // }
+    
     @inlinable
     static func _confirmSizeOfTuple<U>(tuple:U, expectedCount:N? = nil) throws -> N {
         let count = Mirror(reflecting: tuple).children.count
@@ -19,6 +30,19 @@ internal extension FixedSizeCollection {
             throw FSCError.unknownError(message: "tuple's children and tuple's expected count not the same.")
         }
         return count
+    }
+    
+    //TODO: Compare speed. This version checks type.
+    //The other is a pinky swear from the client.
+    @inlinable
+    static func _tupleAsArray<U, T>(tuple:U, isType:T.Type) throws -> [T] {
+        var newArray:[T] = []
+        Mirror(reflecting: tuple).children.forEach { child in
+            if let newValue = child.value as? T {
+                newArray.append(newValue)
+            }
+        }
+        return newArray
     }
     
     
@@ -34,12 +58,12 @@ internal extension FixedSizeCollection {
     }
     
     //TODO: Having difficulties.
-//    @inlinable
-//    internal static func loadFixedSizeCArray<T, R>(source:T, ofType:R.Type) -> [R]? {
-//        Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R]? in
-//            rawPointer.baseAddress?.load(as: [R].self)
-//        }
-//    }
+    //    @inlinable
+    //    internal static func loadFixedSizeCArray<T, R>(source:T, ofType:R.Type) -> [R]? {
+    //        Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R]? in
+    //            rawPointer.baseAddress?.load(as: [R].self)
+    //        }
+    //    }
     
     //MARK: Putting Back
     @inlinable
@@ -47,7 +71,7 @@ internal extension FixedSizeCollection {
         precondition(count == self.count)
         precondition(type == Element.self)
         precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<T>.stride * count)
-
+        
         Swift.withUnsafeMutablePointer(to: &tuple) { tuplePointer in
             precondition(Int(bitPattern: tuplePointer).isMultiple(of: MemoryLayout<T>.alignment))
             tuplePointer.withMemoryRebound(to: Element.self, capacity: count) { reboundPointer in

@@ -14,13 +14,13 @@ final class InitsNStorage: XCTestCase {
     
     
     func testFunctionInits() {
-        let numericDefault = FixedSizeCollection(4, defaultsTo: 12) { [1, 2, 3] }
+        let numericDefault = FixedSizeCollection(4, fillValue: 12) { [1, 2, 3] }
         XCTAssertEqual(numericDefault[0], 1, "collection 0 incorrect")
         XCTAssertEqual(numericDefault[1], 2, "collection 1 incorrect")
         XCTAssertEqual(numericDefault[2], 3, "collection 2 incorrect")
         XCTAssertEqual(numericDefault[3], 12, "collection 3 incorrect")
         
-        let optionalDefault = FixedSizeCollection<Int?>(5, defaultsTo: nil) { [1, 2, 3] }
+        let optionalDefault = FixedSizeCollection<Int?>(5, fillValue: nil) { [1, 2, 3] }
         XCTAssertEqual(optionalDefault[0], 1, "collection 0 incorrect")
         XCTAssertEqual(optionalDefault[1], 2, "collection 1 incorrect")
         XCTAssertEqual(optionalDefault[2], 3, "collection 2 incorrect")
@@ -30,7 +30,7 @@ final class InitsNStorage: XCTestCase {
     
     func testVariadicInferredInit() {
         let expectedArray = [ 1, 2, 3 ]
-        let testCollection = FixedSizeCollection(values:1,2,3)
+        let testCollection = FixedSizeCollection(1,2,3)
         XCTAssertEqual(expectedArray.count, testCollection.count, "collection 4 incorrect")
         for i in 0..<testCollection.count {
             XCTAssertEqual(
@@ -41,7 +41,7 @@ final class InitsNStorage: XCTestCase {
     
     func testVariadicExplicitCountInit() {
         let expectedArray = [ 1, 2, 3, nil, nil ]
-        let testCollection = FixedSizeCollection<Int?>(5, defaultsTo: nil, values: 1,2,3)
+        let testCollection = FixedSizeCollection<Int?>(5, fillValue: nil, values: 1,2,3)
         XCTAssertEqual(expectedArray.count, testCollection.count, "collection 4 incorrect")
         for i in 0..<testCollection.count {
             XCTAssertEqual(
@@ -53,7 +53,7 @@ final class InitsNStorage: XCTestCase {
     func testBufferPointerInit() {
         let baseArray = [ 0, 1, 2, 3, 4, 5, 6]
         let testCollection:FixedSizeCollection<Int> = baseArray.withUnsafeBufferPointer { bufferPointer in
-            return FixedSizeCollection(asCopy: bufferPointer, defaultsTo: 0)
+            return FixedSizeCollection(asCopy: bufferPointer)
         }
         for i in 0..<testCollection.count {
             XCTAssertEqual(
@@ -65,7 +65,7 @@ final class InitsNStorage: XCTestCase {
         let baseTuple = (45,27,83,26,44,98,5)
         
         let tmp_Array = FixedSizeCollection<Int>._getFixedSizeCArrayAssumed(source: baseTuple, boundToType: Int.self)
-        let tC = FixedSizeCollection.makeFixedSizeCollection(count:tmp_Array.count , defaultsTo: 0, values: tmp_Array)
+        let tC = FixedSizeCollection.makeFixedSizeCollection(count:tmp_Array.count , fillValue: 0, values: tmp_Array)
         
         
         XCTAssertEqual(tC[0], baseTuple.0, "collection did not retrieve expected value")

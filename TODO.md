@@ -16,11 +16,15 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
     - [ ] ?? looking for zeros / default value as nil?
     - [ ] pass an individual element or slice to a C function.
+    - [ ] replace functions must work with tuples, too.
+    - [ ] provide copy that is a tuple version 
 - [ ] Default Values initial call
     - [ ] ~~?? Stored value?~~ remove stored value in favor of explicit functions
     - [ ] enable certain methods for when Element is `ExpressibleByIntegerLiteral` or Optional
     - - ~~[ ] default is a keyword, is there a better label ~~ no longer going to be a thing. 
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
+    - [ ] ?? Many collection conformances require an empty initializer, which is not a thing for this type. TBD how to handle this. 
+    - [ ] ?? the storage type for this collection should potentially be ~Copyable, consequences? 
     - [  ] ?? & pointing to typed version of storage? (see ?? on Unsafe)
         - [  ] if not, different prefix that returns pointer to storage? see 
     - [ ~ ] subscripts 
@@ -46,7 +50,8 @@ A done in this context means initial interface, no assurance on quality of imple
     - [x] variadic inits
         - [x] written
         - [x] tests
-    - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?
+    - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)
+        - [ ] needed for RangeReplaceableCollection conformance (see Replace.swift)
     - [~] the withUnsafes*
        [x] all implmented
        [x] all tested
@@ -81,7 +86,11 @@ A done in this context means initial interface, no assurance on quality of imple
 -  ~~ [ ] in a package manager how to have a per file target inclusion? (testing functions) ~~
 - [x] separate testing code C and Swift Bridge for testing code C into own targets 
     - [ ] is this best approach for using C (C++?) with XCTest
-- [ ] All the C is currently just for testing, but should add nullability(most modern?), but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18) so folks referring to test library for application ideas can have that as a reference.
+- [ ] the test messages could be better
+- [ ] the testing subgroups could be smaller
+- [ ] move all the tests out side of the measures
+- [ ] ?? how to measure throwing functions. Do I really have to catch them?
+- [ ] All the C is currently just for testing, but should add nullability(most modern?)?, but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18) so folks referring to test library for application ideas can have that as a reference.
 
 ## Repo Meta
 - [x] [swift-format](https://github.com/apple/swift-format/) CLI installed & ran with default rules.
@@ -107,7 +116,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
 - [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
 - [x] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up. 
-    - That was the [Variadic Generics](https://forums.swift.org/t/variadic-generics/54511) thing. Already using it. 
+    - YES! [Variadic Generics](https://forums.swift.org/t/variadic-generics/54511) thing. 
 
 - [ ] seems related:
     - https://forums.swift.org/t/pitch-introduce-for-borrow-and-for-inout-to-provide-non-copying-collection-iteration/62549
@@ -121,6 +130,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
     - https://forums.swift.org/t/short-array-optimisation/68082/3 
     - https://forums.swift.org/t/pitch-synchronous-mutual-exclusion-lock/69889
+    
 
 ## NonC Interop Targets
 
@@ -128,7 +138,7 @@ A done in this context means initial interface, no assurance on quality of imple
 
 > It could also easily replace ManagedBuffer which would be a win in and of itself in my humble opinion.[forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
 
-> As a vector type backing [forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
+> As a vector type backing [forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79) Also `Vector<T, size: Int>` [here](https://forums.swift.org/t/checking-in-more-thoughts-on-arrays-and-variadic-generics/4948/16) 
 
 
 

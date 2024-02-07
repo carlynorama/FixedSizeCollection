@@ -44,7 +44,7 @@ extension FixedSizeCollection {
     }
     set {
         //public replace function has bounds check.
-        replace(at: r, with: newValue)
+        replace(r, with: newValue)
     }
   }
 }
