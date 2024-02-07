@@ -30,7 +30,7 @@ final class InitsNStorage: XCTestCase {
     
     func testVariadicInferredInit() {
         let expectedArray = [ 1, 2, 3 ]
-        let testCollection = FixedSizeCollection(1,2,3)
+        let testCollection = FixedSizeCollection(values:1,2,3)
         XCTAssertEqual(expectedArray.count, testCollection.count, "collection 4 incorrect")
         for i in 0..<testCollection.count {
             XCTAssertEqual(
@@ -41,7 +41,7 @@ final class InitsNStorage: XCTestCase {
     
     func testVariadicExplicitCountInit() {
         let expectedArray = [ 1, 2, 3, nil, nil ]
-        let testCollection = FixedSizeCollection<Int?>(5, defaultsTo: nil, 1,2,3)
+        let testCollection = FixedSizeCollection<Int?>(5, defaultsTo: nil, values: 1,2,3)
         XCTAssertEqual(expectedArray.count, testCollection.count, "collection 4 incorrect")
         for i in 0..<testCollection.count {
             XCTAssertEqual(

@@ -11,7 +11,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] Fancy inits
         - [x] init directly from C fixed with array definition. (and test [x])
         - [ ] ?? FixedSizeCollection(copyOf: TypedPointer, count:N)
-        - [ ] be able to put back into C var
+        - [x] be able to put back into C var (and test [x])
         - [x] init from buffer view  (and test [x])
     - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
     - [ ] ?? looking for zeros / default value as nil?
@@ -103,6 +103,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
     - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
     - https://forums.swift.org/t/short-array-optimisation/68082/3 
+    - https://forums.swift.org/t/pitch-synchronous-mutual-exclusion-lock/69889
 
 ## NonC Interop Targets
 
