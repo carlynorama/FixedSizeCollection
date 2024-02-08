@@ -47,27 +47,29 @@ extension FixedSizeCollection {
         Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Element>.alignment))
       return tmpCount
     }
-      if expectedCount != nil, expectedCount != count {
-          throw FSCError.unknownError(
-              message: "_Storage's expected and calculated counts not the same.")
-      }
-      return count
-  }
-    
-    static internal func _erasedVerifyCount<U, T>(of item:U, boundTo:T.Type, expectedCount: Int? = nil) throws -> Int{
-        let count = Swift.withUnsafeBytes(of: item) { bytes in
-            let tmpCount = bytes.count / MemoryLayout<Int32>.stride
-            precondition(tmpCount * MemoryLayout<Int32>.stride == bytes.count)
-            precondition(
-                Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Int32>.alignment))
-            return tmpCount
-        }
-        if expectedCount != nil, expectedCount != count {
-            throw FSCError.unknownError(
-                message: "_Storage's expected and calculated counts not the same.")
-        }
-        return count
+    if expectedCount != nil, expectedCount != count {
+      throw FSCError.unknownError(
+        message: "_Storage's expected and calculated counts not the same.")
     }
+    return count
+  }
+
+  static internal func _erasedVerifyCount<U, T>(
+    of item: U, boundTo: T.Type, expectedCount: Int? = nil
+  ) throws -> Int {
+    let count = Swift.withUnsafeBytes(of: item) { bytes in
+      let tmpCount = bytes.count / MemoryLayout<Int32>.stride
+      precondition(tmpCount * MemoryLayout<Int32>.stride == bytes.count)
+      precondition(
+        Int(bitPattern: bytes.baseAddress).isMultiple(of: MemoryLayout<Int32>.alignment))
+      return tmpCount
+    }
+    if expectedCount != nil, expectedCount != count {
+      throw FSCError.unknownError(
+        message: "_Storage's expected and calculated counts not the same.")
+    }
+    return count
+  }
 
   @inlinable
   internal func _sliceOfStorage(_ range: Range<N>) throws -> _Storage.SubSequence {
@@ -86,5 +88,3 @@ extension FixedSizeCollection {
   internal func _mStrideOffset(for count: N) -> N { MemoryLayout<Element>.stride * count }
 
 }
-
-
