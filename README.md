@@ -118,8 +118,8 @@ var myArray:Int[ ] = [1,2,3] //†
 (Int, 6) or (6, Int)//**
 ```
 
-> thoughts behind syntax in pitch, [recap pyrtsa](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/104)
->We want multi-dimensional indexing to read in the same order as array shape.
+
+> `*` We want multi-dimensional indexing to read in the same order as array shape.
 >
 >If we had it like var array: ((Int * 3) * 4) then confusingly the last element of the last triple would be found at array[3][2]!
 >
@@ -128,6 +128,8 @@ var myArray:Int[ ] = [1,2,3] //†
 >And next, it would be convenient if we could omit the inner parentheses as var array: (4 * 3 * Int). But that would require the type-level * operator to be right associative, which is again confusing because the value-level * is left-associative.
 >
 >So that gets us to consider another operator. The × symbol would be cool, but it'd be the first standard non-ASCII character in Swift syntax, so…
+> [recap by pyrtsa](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/104)
+
 
 > † Two options about the "Int[]" syntax notation:
 >  - the type is inferred as Int[3] based on the subsequent initializing expression.
@@ -212,10 +214,11 @@ myFSC.setAll(to:5) //=> [5,5,5,5,5,5,5]
 ```
 
 *[tera](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/86)
-**[wadetregaskis](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/90) inn response to the fact that the 2nd might imply "complete the pattern"  a [vinculum](https://en.wikipedia.org/wiki/Vinculum_%28symbol%29) might be an alternative.
+
+**[wadetregaskis](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/90) in response to the fact that the 2nd might imply "complete the pattern"  a [vinculum](https://en.wikipedia.org/wiki/Vinculum_%28symbol%29) might be an alternative.
 
 
-This package has chosen the rout that if an action will need a default value it will ask for it in the parameters of the method at this time. An exception is made for types that have .zero or .none implemented, which will be able to take advantage of certain shortcuts that other Element types cannot. 
+This package has chosen the route that if an action will need a default value it will ask for it in the parameters of the method at this time. An exception is made for types that have .zero or .none implemented, which will be able to take advantage of certain shortcuts that other Element types cannot. 
 
 ## References
 

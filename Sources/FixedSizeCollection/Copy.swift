@@ -23,7 +23,7 @@ extension FixedSizeCollection {
   //TODO: Force user to confirm the type explicitly or no?
   public func copyIntoTupleDestination<U>(tuple: inout U) throws {
     //checks are in _load function
-    let tupleCount = try Self._confirmSizeOfTuple(tuple: tuple)
-    try _loadIntoTuple(tuple: &tuple, count: tupleCount, type: Element.self)
+    let tupleCount = try Self._verifyCount(of: tuple)
+      try _load(tupleCount, bytesOfType: Element.self, into: &tuple)
   }
 }
