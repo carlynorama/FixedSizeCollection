@@ -11,7 +11,7 @@ import Foundation
 
 extension FixedSizeCollection {
   @inlinable
-  func gunc(at position: N) -> Element {
+  func _gunc(at position: N) -> Element {
     return _storage.withUnsafeBytes { rawPointer in
       let bufferPointer = rawPointer.assumingMemoryBound(to: Element.self)
       return bufferPointer[position]
@@ -22,7 +22,7 @@ extension FixedSizeCollection {
   //Not currently @inlinable as written
   @inlinable
   mutating
-    func sunc(at position: N, newValue: Element)
+    func _sunc(at position: N, newValue: Element)
   {
     let startIndex = _storage.startIndex + _mStrideOffset(for: position)
     let endIndex = startIndex + _mStrideElem
@@ -32,7 +32,7 @@ extension FixedSizeCollection {
   }
 
   @inlinable
-  func guncCopyRangeAsArray(_ range: Range<N>) -> [Element] {
+  func _guncCopyRangeAsArray(_ range: Range<N>) -> [Element] {
     let sourceByteCount = _mStrideOffset(for: range.count)
     let tmp = [Element](unsafeUninitializedCapacity: sourceByteCount) {
       destBuffer, initializedCount in
@@ -50,7 +50,7 @@ extension FixedSizeCollection {
 
   @inlinable
   mutating
-    func suncReplacingSubrange(range: Range<N>, with newValue: [Element])
+    func _suncReplacingSubrange(range: Range<N>, with newValue: [Element])
   {
     let startIndex = _storage.startIndex + _mStrideOffset(for: range.lowerBound)
     let endIndex = _storage.startIndex + _mStrideOffset(for: range.upperBound)

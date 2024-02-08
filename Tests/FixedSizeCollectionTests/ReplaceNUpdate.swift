@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ReplaceNUpdate.swift
 //
 //
 //  Created by Carlyn Maw on 2/7/24.
@@ -32,7 +32,7 @@ final class ReplaceNUpdate: XCTestCase {
     //let baseArray = [1, 2, 3, 7]
     var tC = FixedSizeCollection<Int32> { baseArray }
     measure {
-      tC.suncReplacingSubrange(range: range, with: newValue)
+      tC._suncReplacingSubrange(range: range, with: newValue)
       for i in 0..<expectedArray.count {
         XCTAssertEqual(
           tC[i], expectedArray[i], "did not retrieve expected value at \(i)")

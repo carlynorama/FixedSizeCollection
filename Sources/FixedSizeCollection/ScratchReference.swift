@@ -189,7 +189,8 @@ extension FixedSizeCollection {
     correctCountData data: Data, as numericType: N.Type
   ) -> N {
     //Non numerics should really use stride.
-    precondition(data.count == MemoryLayout<N>.size)  //Could determine type switch on data count with error.
+    //Could determine type switch on data count with error.
+    precondition(data.count == MemoryLayout<N>.size)
     var newValue: N = 0
     let copiedCount = Swift.withUnsafeMutableBytes(of: &newValue, { data.copyBytes(to: $0) })
     precondition(copiedCount == MemoryLayout.size(ofValue: newValue))
