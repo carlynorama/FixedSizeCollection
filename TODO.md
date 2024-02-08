@@ -115,11 +115,15 @@ A done in this context means initial interface, no assurance on quality of imple
 - [ ] add plugin? it's not in the other Swift repos, which do official Swift projects actually use? 
 - [ ] platform info in Package.swift, TBD how far back? 
 - [ ] what .clang-format file to use? 
+- [ ] Format-N-Test plugin
+    - [ ] SPM version
+    - `xcodebuild test -scheme SampleApp`
+    - [ ] XCode version
 
 ## Misc & General Research Q's 
 - [ ] Hmm... this should be [~Copyable](https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md) shouldn't it? 
     - Loose ability to conform to RandomAccessCollection?
-
+- [ ] ?? Should `_Storage` be an Actor when it isn't a StorageView?
 - [ ] Iterators and Stream, what comes with Random Access Collection? 
 - [ ] SIL Builtins,  @inline(always), @alwaysEmitIntoClient for making Matrix type (https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/9)
 - [ x ] [faster bounds comparator](https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5)`UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)` by TellowKrinkle
