@@ -8,7 +8,7 @@ This FixedSizedCollection is intended to be a possible version as API on a bag o
 
 The FixedSizedCollection itself can then vend Views or Copies as needed. Those views or copies could be to its full collection or SubSequences.
 
-This could end up being a Protocol.
+This could end up being a Protocol once StorageView exists, but in the mean time... bytes that someone else can dealloc can't make promises so currently this collection has to have a copy. 
 
 ## Major Use Cases
 
