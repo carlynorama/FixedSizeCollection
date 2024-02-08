@@ -46,8 +46,10 @@ A done in this context means initial interface, no assurance on quality of imple
         - [x] replace(at: N, with: E), [x] test
         - [x] replace(at: R<N>, with: E), [x] test
         - [x] replace(at: R<N>, with: [E]), [x] test
-        - [ ] replace(with:E, where: Predicate), [ ] test
-    - [x] variadic inits
+        - [x] replaceAll(with:E) [x] test
+        - [ ] replaceAll(_ E: with:E) / replaceAll(where:with) [ ] test
+            - [ ] plug into index / Sequence first? What's available "for free"
+    - [x] variadic (array) inits
         - [x] written
         - [x] tests
     - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)
@@ -58,15 +60,22 @@ A done in this context means initial interface, no assurance on quality of imple
        [] ?? I have them pointing to _storage, right with that spelling? see & Question.
         - [ ] get subsequence range @inlinable
 - [ ] mask, flood and clear
-    - [ ] for .zero and nil defined Elements allow .clear() and .clear(at:)
-    - [ ] .flood(with:) and
-    - [ ] rename replace(at: R<N>, with: E) to .flood(range:with:) vs replace
-    - [ ] some kind of [Bool][Element] zip feature, maybe called mask. TBD. 
+    - [x] for .zero and nil defined Elements allow .clear() and .clear(at:)
+        - [x] clear for numerics [x] test
+        - [x] clear for optionals [x] test
+    - [x] ~~.flood(with:)~~ replaceAll [x] test
+    - [ ] some kind of [Bool][Element] zip feature, maybe called mask. TBD.
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
-- [ ] matrix[0][24] style init of some format
-- [ ] matrix access
+- [ ] matrix
+    - [ ] matrix init
+    - [ ] matrix access
+    - [ ] matrix update
+- [ ] make _Storage a protocol so it can be swapped out. 
+    - [ ] identify everything being used that's Data's
+    - [ ] include it in the protocol
 - [ ] Integration into Swift (Longer Term)
-    - [ ] what would it take to replace Tuple as the Type Of Choice for C arrays? 
+    - [ ] what would it take to replace Tuple as the Type Of Choice for C arrays? How is and is that not StorageView? Is it even needed once StorageView exists. 
+
 
 ## Documentation
 
