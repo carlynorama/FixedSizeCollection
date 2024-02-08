@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  InitsNStorage.swift
 //
 //
 //  Created by Carlyn Maw on 2/5/24.
@@ -15,26 +15,26 @@ final class InitsNStorage: XCTestCase {
 
   func testFunctionInits() {
     let numericDefault = FixedSizeCollection(4, fillValue: 12) { [1, 2, 3] }
-    XCTAssertEqual(numericDefault[0], 1, "collection 0 incorrect")
-    XCTAssertEqual(numericDefault[1], 2, "collection 1 incorrect")
-    XCTAssertEqual(numericDefault[2], 3, "collection 2 incorrect")
-    XCTAssertEqual(numericDefault[3], 12, "collection 3 incorrect")
+    XCTAssertEqual(numericDefault[0], 1, "0 incorrect")
+    XCTAssertEqual(numericDefault[1], 2, "1 incorrect")
+    XCTAssertEqual(numericDefault[2], 3, "2 incorrect")
+    XCTAssertEqual(numericDefault[3], 12, "3 incorrect")
 
     let optionalDefault = FixedSizeCollection<Int?>(5, fillValue: nil) { [1, 2, 3] }
-    XCTAssertEqual(optionalDefault[0], 1, "collection 0 incorrect")
-    XCTAssertEqual(optionalDefault[1], 2, "collection 1 incorrect")
-    XCTAssertEqual(optionalDefault[2], 3, "collection 2 incorrect")
-    XCTAssertEqual(optionalDefault[3], nil, "collection 3 incorrect")
-    XCTAssertEqual(optionalDefault[4], nil, "collection 4 incorrect")
+    XCTAssertEqual(optionalDefault[0], 1, "0 incorrect")
+    XCTAssertEqual(optionalDefault[1], 2, "1 incorrect")
+    XCTAssertEqual(optionalDefault[2], 3, "2 incorrect")
+    XCTAssertEqual(optionalDefault[3], nil, "3 incorrect")
+    XCTAssertEqual(optionalDefault[4], nil, "4 incorrect")
   }
 
   func testVariadicInferredInit() {
     let expectedArray = [1, 2, 3]
     let testCollection = FixedSizeCollection(1, 2, 3)
-    XCTAssertEqual(expectedArray.count, testCollection.count, "collection 4 incorrect")
+    XCTAssertEqual(expectedArray.count, testCollection.count, "count incorrect")
     for i in 0..<testCollection.count {
       XCTAssertEqual(
-        testCollection[i], expectedArray[i], "inferred count array wrong at \(i)"
+        testCollection[i], expectedArray[i], "\(i): no match"
       )
     }
   }
@@ -42,10 +42,10 @@ final class InitsNStorage: XCTestCase {
   func testVariadicExplicitCountInit() {
     let expectedArray = [1, 2, 3, nil, nil]
     let testCollection = FixedSizeCollection<Int?>(5, fillValue: nil, values: 1, 2, 3)
-    XCTAssertEqual(expectedArray.count, testCollection.count, "collection 4 incorrect")
+    XCTAssertEqual(expectedArray.count, testCollection.count, "count incorrect")
     for i in 0..<testCollection.count {
       XCTAssertEqual(
-        testCollection[i], expectedArray[i], "explicit count array wrong at \(i)"
+        testCollection[i], expectedArray[i], "\(i): no match"
       )
     }
   }
@@ -58,35 +58,35 @@ final class InitsNStorage: XCTestCase {
     }
     for i in 0..<testCollection.count {
       XCTAssertEqual(
-        testCollection[i], baseArray[i], "collection did not retrieve expected value")
+        testCollection[i], baseArray[i], "\(i): no match")
     }
   }
 
   func testInitFromTuple() throws {
     let baseTuple = (45, 27, 83, 26, 44, 98, 5)
 
-    let tmp_Array = FixedSizeCollection<Int>._getFixedSizeCArrayAssumed(
-      source: baseTuple, boundToType: Int.self)
+    let tmp_Array = FixedSizeCollection<Int>._getAssuming(
+        valuesBoundTo: Int.self, from: baseTuple)
     let tC = FixedSizeCollection.makeFixedSizeCollection(
       count: tmp_Array.count, fillValue: 0, values: tmp_Array)
 
-    XCTAssertEqual(tC[0], baseTuple.0, "collection did not retrieve expected value")
-    XCTAssertEqual(tC[1], baseTuple.1, "collection did not retrieve expected value")
-    XCTAssertEqual(tC[2], baseTuple.2, "collection did not retrieve expected value")
-    XCTAssertEqual(tC[3], baseTuple.3, "collection did not retrieve expected value")
-    XCTAssertEqual(tC[4], baseTuple.4, "collection did not retrieve expected value")
-    XCTAssertEqual(tC[5], baseTuple.5, "collection did not retrieve expected value")
-    XCTAssertEqual(tC[6], baseTuple.6, "collection did not retrieve expected value")
+    XCTAssertEqual(tC[0], baseTuple.0, "0: no match")
+    XCTAssertEqual(tC[1], baseTuple.1, "1: no match")
+    XCTAssertEqual(tC[2], baseTuple.2, "2: no match")
+    XCTAssertEqual(tC[3], baseTuple.3, "3: no match")
+    XCTAssertEqual(tC[4], baseTuple.4, "4: no match")
+    XCTAssertEqual(tC[5], baseTuple.5, "5: no match")
+    XCTAssertEqual(tC[6], baseTuple.6, "6: no match")
 
     let testCT = FixedSizeCollection(asCopyOfTuple: baseTuple, ofType: Int.self)
 
-    XCTAssertEqual(testCT[0], baseTuple.0, "collection did not retrieve expected value")
-    XCTAssertEqual(testCT[1], baseTuple.1, "collection did not retrieve expected value")
-    XCTAssertEqual(testCT[2], baseTuple.2, "collection did not retrieve expected value")
-    XCTAssertEqual(testCT[3], baseTuple.3, "collection did not retrieve expected value")
-    XCTAssertEqual(testCT[4], baseTuple.4, "collection did not retrieve expected value")
-    XCTAssertEqual(testCT[5], baseTuple.5, "collection did not retrieve expected value")
-    XCTAssertEqual(testCT[6], baseTuple.6, "collection did not retrieve expected value")
+    XCTAssertEqual(testCT[0], baseTuple.0, "0: no match")
+    XCTAssertEqual(testCT[1], baseTuple.1, "1: no match")
+    XCTAssertEqual(testCT[2], baseTuple.2, "2: no match")
+    XCTAssertEqual(testCT[3], baseTuple.3, "3: no match")
+    XCTAssertEqual(testCT[4], baseTuple.4, "4: no match")
+    XCTAssertEqual(testCT[5], baseTuple.5, "5: no match")
+    XCTAssertEqual(testCT[6], baseTuple.6, "6: no match")
 
   }
 
@@ -119,13 +119,18 @@ final class InitsNStorage: XCTestCase {
 
     //testValues are Ints.
     XCTAssertEqual(count, gVC, "count and storage size didn't work")
-
-    XCTAssertEqual(
-      count, FixedSizeCollection<Int>._getVerifiedCount(storage: _storage),
-      "Storage did not save the expected amount.")
+      
+      do {
+          let _ = try FixedSizeCollection<Int>._verifyCount(of: _storage, expectedCount: count)
+      }
+      catch {
+          XCTFail("storage size verification failed.")
+      }
+      
+      
   }
 
-  func testInferredCountCode() {
+  func testInferredCountCode() throws {
     let testValues = [0, 1, 2, 3, 4, 5, 6]
     let count = testValues.count
 
@@ -151,9 +156,12 @@ final class InitsNStorage: XCTestCase {
     //testValues are Ints.
     XCTAssertEqual(count, gVC, "count and storage size didn't work")
 
-    XCTAssertEqual(
-      count, FixedSizeCollection<Int>._getVerifiedCount(storage: _storage),
-      "Storage did not save the expected amount.")
+      do {
+          let _ = try FixedSizeCollection<Int>._verifyCount(of: _storage, expectedCount: count)
+      }
+      catch {
+          XCTFail("storage size verification failed.")
+      }
 
   }
 

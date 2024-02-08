@@ -49,9 +49,12 @@ extension FixedSizeCollection {
       Data(buffer: pointer)
     }
 
-    assert(
-      self.count <= Self._getVerifiedCount(storage: _storage),
-      "Storage did not reserve enough room.")
+      do {
+          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+      }
+      catch {
+          preconditionFailure("storage size verification failed.")
+      }
   }
 
   @inlinable
@@ -80,9 +83,12 @@ extension FixedSizeCollection {
     }
     self.count = values.count
 
-    assert(
-      self.count <= Self._getVerifiedCount(storage: _storage),
-      "Storage did not reserve enough room.")
+      do {
+          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+      }
+      catch {
+          preconditionFailure("storage size verification failed.")
+      }
   }
 
   @inlinable
@@ -103,9 +109,12 @@ extension FixedSizeCollection {
     self._storage = Data(buffer: pointer)
     self.count = pointer.count
 
-    assert(
-      self.count <= Self._getVerifiedCount(storage: _storage),
-      "Storage did not reserve enough room.")
+      do {
+          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+      }
+      catch {
+          preconditionFailure("storage size verification failed.")
+      }
   }
 
   public init<T>(asCopyOfTuple source: T, ofType: Element.Type) {
@@ -114,10 +123,10 @@ extension FixedSizeCollection {
     //_get(valueOfType:from:(repeat each T)), but it's
     //causing compiler crashed when used with init.
     //TODO: figure out how to make an init with a Parameter Pack tuple that doesn't crash.
-    let tmp = Self._getFixedSizeCArrayAssumed(source: source, boundToType: Element.self)
+    let tmp = Self._getAssuming(valuesBoundTo: Element.self, from: source)
     self = Self.makeFixedSizeCollection(tmp)
     do {
-      let _ = try Self._confirmSizeOfTuple(tuple: source, expectedCount: self.count)
+      let _ = try Self._verifyCount(of: source, expectedCount: self.count)
     } catch {
       assertionFailure(
         "tuple count and collection count don't match. tuple was likely not homogenous or not of the type indicated."
@@ -131,9 +140,12 @@ extension FixedSizeCollection {
     self._storage = storage
     self.count = count
 
-    assert(
-      self.count <= Self._getVerifiedCount(storage: _storage),
-      "Storage did not reserve enough room.")
+      do {
+          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+      }
+      catch {
+          preconditionFailure("storage size verification failed.")
+      }
 
   }
 
