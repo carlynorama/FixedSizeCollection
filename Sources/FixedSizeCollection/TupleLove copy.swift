@@ -9,9 +9,9 @@
 //
 //
 //internal extension FixedSizeCollection {
-//    
+//
 //    //MARK: Utilities
-//    
+//
 //    @inlinable
 //    static func _confirmSizeOfTuple<each T>(tuple:(repeat each T), expectedCount:N? = nil) throws -> N {
 //        let count = Mirror(reflecting: tuple).children.count
@@ -20,8 +20,8 @@
 //        }
 //        return count
 //    }
-//    
-//        
+//
+//
 //    //MARK: Getting Values Out
 //    //Less safe in the case that the memory is not in fact bound to this.
 //    @inlinable
@@ -31,7 +31,7 @@
 //            return [R](bufferPointer)
 //        }
 //    }
-//    
+//
 //    //TODO: Having difficulties.
 //    //    @inlinable
 //    //    internal static func loadFixedSizeCArray<T, R>(source:T, ofType:R.Type) -> [R]? {
@@ -45,7 +45,7 @@
 //        //return (repeat each item as? E) for example, not a thing.
 //        return (repeat each item)
 //    }
-//    
+//
 //    //TODO: Compare speed. This version checks type.
 //    //The currently use one other is a pinky swear from the client
 //    //keep an eye on https://github.com/apple/swift/pull/70227
@@ -58,7 +58,7 @@
 //        }
 //        return newArray
 //    }
-//    
+//
 //    //MARK: Putting Back
 //    //Uses withMemoryRebound. Be sure target's memory is in fact bound to that.
 //    @inlinable
@@ -66,7 +66,7 @@
 //        precondition(count == self.count)
 //        precondition(type == Element.self)
 //        precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<R>.stride * count)
-//        
+//
 //        Swift.withUnsafeMutablePointer(to: &tuple) { tuplePointer in
 //            precondition(Int(bitPattern: tuplePointer).isMultiple(of: MemoryLayout<R>.alignment))
 //            tuplePointer.withMemoryRebound(to: Element.self, capacity: count) { reboundPointer in
@@ -75,10 +75,10 @@
 //                    bufferPointer[i] = self[i]
 //                }
 //            }
-//            
+//
 //        }
 //    }
-//    
+//
 //    //YOLO transfer.
 //    //Don't use this. Especially for anything more complicated than a Int, which you might get away with, but I didn't say that.
 //    //This one also doesn't accept upgrading to variadic generics.
@@ -90,7 +90,7 @@
 //        precondition(type == Element.self)
 //        precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<R>.stride * count)
 //        precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<R>.stride * self.count)
-//        
+//
 //        try Swift.withUnsafeMutablePointer(to: &tuple) { tuplePointer in
 //            precondition(Int(bitPattern: tuplePointer).isMultiple(of: MemoryLayout<R>.alignment))
 //            let _ = try self.withUnsafeBufferPointer { bufferPointer in
@@ -98,5 +98,5 @@
 //            }
 //        }
 //    }
-//    
+//
 //}

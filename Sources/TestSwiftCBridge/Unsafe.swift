@@ -13,30 +13,29 @@ import Foundation
 import TestCSupport
 
 extension FixedSizeCollection {
-    
-    
+
   //TODO: Check mutators do in fact mutate.
 
   //TODO: Try to fix &fsc, (ignore direct data access.)
   //static func basicPrint() throws {
-//    static func storageInout() {
-//       var testCollection = FixedSizeCollection<Int32>(5, fillValue: 5)
-////  TODO: I would like for this to work. override the prefix how?
-////  //When var: error: cannot convert value of type 'UnsafeMutablePointer<FixedSizeCollection<Int32>>' to expected argument type 'UnsafeMutablePointer<Int32>'
-//    //When let: requires mutable.
-//    acknowledge_cint_buffer(&testCollection, testCollection.count)
-//        
-//    //cannot convert value of type 'FixedSizeCollection<Int32>' to expected argument type 'UnsafePointer<Int32>?'
-//    acknowledge_cint_buffer_const(testCollection, testCollection.count)
-//        
-//    let test:[CInt] = [42, 45, 48]
-//    acknowledge_cint_buffer_const(test, testCollection.count)
-//
-////  //Expected Failure. Data doesn't know what Element is.
-//    //back when internal _storage was a private dataBlob
-////  //error: cannot convert value of type 'UnsafeMutablePointer<(Data)>' to expected //argument type 'UnsafeMutablePointer<Int32>'
-////  acknowledge_cint_buffer(&(testCollection.dataBlob), testCollection.count)
-//  }
+  //    static func storageInout() {
+  //       var testCollection = FixedSizeCollection<Int32>(5, fillValue: 5)
+  ////  TODO: I would like for this to work. override the prefix how?
+  ////  //When var: error: cannot convert value of type 'UnsafeMutablePointer<FixedSizeCollection<Int32>>' to expected argument type 'UnsafeMutablePointer<Int32>'
+  //    //When let: requires mutable.
+  //    acknowledge_cint_buffer(&testCollection, testCollection.count)
+  //
+  //    //cannot convert value of type 'FixedSizeCollection<Int32>' to expected argument type 'UnsafePointer<Int32>?'
+  //    acknowledge_cint_buffer_const(testCollection, testCollection.count)
+  //
+  //    let test:[CInt] = [42, 45, 48]
+  //    acknowledge_cint_buffer_const(test, testCollection.count)
+  //
+  ////  //Expected Failure. Data doesn't know what Element is.
+  //    //back when internal _storage was a private dataBlob
+  ////  //error: cannot convert value of type 'UnsafeMutablePointer<(Data)>' to expected //argument type 'UnsafeMutablePointer<Int32>'
+  ////  acknowledge_cint_buffer(&(testCollection.dataBlob), testCollection.count)
+  //  }
 
   static func rawBufferPointerPrint() throws {
     let testCollection = FixedSizeCollection<Int32>(5, fillValue: 5)

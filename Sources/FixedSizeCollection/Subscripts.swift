@@ -23,8 +23,8 @@ extension FixedSizeCollection {
       }
     }
     set {
-        //public replace function has bounds check. 
-        replace(at:position, with:newValue)
+      //public replace function has bounds check.
+      replace(at: position, with: newValue)
     }
   }
 
@@ -43,8 +43,8 @@ extension FixedSizeCollection {
       return guncCopyRangeAsArray(r)
     }
     set {
-        //public replace function has bounds check.
-        replace(r, with: newValue)
+      //public replace function has bounds check.
+      replace(r, with: newValue)
     }
   }
 }
