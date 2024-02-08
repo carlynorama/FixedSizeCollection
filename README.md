@@ -2,8 +2,9 @@
 
 See  https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 
+Previously working with C Arrays in Swift was frequently best solved by writing custom code for custom situations due to the nature of Tuples. With the [large amount of work being done](#related-pitches-and-proposals) to make the compiler ready for better C Array interaction it begins to become more reasonable to think about what a general API could be.  
 
-This FixedSizedCollection is intended to be an API on a bag of bytes service that will be able make a solid commitment to compiler that those bytes all exist and have a value of type Element and the size of that memory will not change for the lifetime of that FixedSizedCollection. That BytesService could be owned and managed by the FixedSizedCollection, or by something reliable a client offers up on initialization (a BufferView, e.g,).
+This FixedSizedCollection is intended to be a possible version as API on a bag of bytes service that will be able make a solid commitment to compiler that those bytes all exist and have a value of type Element and the size of that memory will not change for the lifetime of that FixedSizedCollection. That BytesService could be owned and managed by the FixedSizedCollection, or by something reliable a client offers up on initialization (a StorageView, e.g,).
 
 The FixedSizedCollection itself can then vend Views or Copies as needed. Those views or copies could be to its full collection or SubSequences.
 
@@ -31,22 +32,27 @@ All inits create copies into the types personal _Storage (currently Data). Poten
 
 ```swift
     init(_ count:Int, default d:Element, initializer:() -> [Element] = { [] }) 
-    init(_ count: Int, defaultsTo d: Element, _ values:Element...)
-    internal init(_ count:Int, storage: _Storage, defaultsTo d: Element?, as: Element.Type) //which is Data for now
+    init(_ count: Int, fillValue d: Element, _ values:Element...)
+    internal init(_ count:Int, storage: _Storage, fillValue d: Element?, as: Element.Type) //which is Data for now
 ```
 
 Theses all have a duplicate overload where count can be inferred from the values submitted that also doesn't require a default set. 
 
-two inits only have inferred counts, but that could be changed. 
+Two inits only have inferred counts, but that could be changed. 
 ```swift 
- public init<T>(asCopyOfTuple source:T, ofType:Element.Type, defaultsTo d: Element? = nil)
- public init(asCopy pointer:UnsafeBufferPointer<Element>, defaultsTo d: Element? = nil)
- ```
+//named because this init is an erased type, but will only work for a tuple.
+//TODO: replace with parameter pack? 
+ public init<T>(asCopyOfTuple source:T, ofType:Element.Type, fillValue d: Element? = nil)
 
+ //name because asCopy, because ideally one day the _Storage could be the 
+ //buffer pointer or something like that once that's safe (see work on 
+ //StorageView).
+ public init(asCopy pointer:UnsafeBufferPointer<Element>, fillValue d: Element? = nil)
+ ```
 
 ## Sugar and Spellings
 
-This implementation does not take a strong opinion as to what the final sugar should be. 
+This implementation does not take a strong opinion as to what the final sugar should be. It merely provides init methods with parameters. 
 
 ### Examples from other languages
 
@@ -60,12 +66,13 @@ Java:      new int[10];
 Julia:     ntuple(i -> i^i, 9)...  # Tuple{Vararg{T,N}}
 Kotlin:    Array(10) { }
 nim:       array[10, int]
-Ruby:      [i32; 10]
+Ruby       [0] + (1..9).map { |n| n**n } //is it the only kind? 
+rust:      [i32; 10]
 ```
 
 Scheme:
 ```
-  (list->vector
+  ((list->vector
     (cons
       0
       (let loop ((i 1))
@@ -73,16 +80,6 @@ Scheme:
           '()
           (cons (expt i i)
                 (loop (+ i 1))))))))
-```
-
-### This Implementation
-
-No init sugar implemented but this implementation would support easily
-
-```swift
-var myArray:[Int](10)
-var myArray:[Int](10, default:Int) //and longer, "size:" is a ? 
-var myArray:[Int]([10,10], default:...) // TODO. for matrix inits. 
 ```
 
 ### For view-only type
@@ -100,7 +97,6 @@ myExistingArrayOrArraySlice.withFixedMemory { fixedCollection in
 }
 ```
 
-
 ### Storage Backed
 
 Others suggested, presumably with the idea of allocated memory behind them. [But maybe not](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/30)(Joe_Groff)
@@ -108,6 +104,9 @@ Others suggested, presumably with the idea of allocated memory behind them. [But
 Additional ideas are in the discussion of [Defaults](#default-values). 
 
 ```
+//Orig, number first improved composability
+(5 x Int) //*
+var (3 * Int)  // 
 var myArray:[Int, 10]
 var myArray:[Int * 10], var myArray:[Int x 10], var Array<String>[3]
 Array<String>[3]
@@ -115,14 +114,28 @@ var myArray(Int * 10) //has tuple implications
 struct FixedArray<T, N: Int> {...}.
 Int[3], Int[2][3]
 var myArray:Int[_] = [1,2,3] for derived fixed size.
-var myArray:Int[ ] = [1,2,3] †
+var myArray:Int[ ] = [1,2,3] //†
+(Int, 6) or (6, Int)//**
 ```
+
+> thoughts behind syntax in pitch, [recap pyrtsa](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/104)
+>We want multi-dimensional indexing to read in the same order as array shape.
+>
+>If we had it like var array: ((Int * 3) * 4) then confusingly the last element of the last triple would be found at array[3][2]!
+>
+>So it's better to place the multiplicity on the left-hand side like var array: (4 * (3 * Int)). Read it like "four triples of Int".
+>
+>And next, it would be convenient if we could omit the inner parentheses as var array: (4 * 3 * Int). But that would require the type-level * operator to be right associative, which is again confusing because the value-level * is left-associative.
+>
+>So that gets us to consider another operator. The × symbol would be cool, but it'd be the first standard non-ASCII character in Swift syntax, so…
 
 > † Two options about the "Int[]" syntax notation:
 >  - the type is inferred as Int[3] based on the subsequent initializing expression.
 >  - (this is how "int x[] = [1, 2, 3];" is inferred to be "int x[3]" in C).
 >  - this notation could be used as a synonym for the "normal" [Int] array.
 > -- [tera](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/86)
+
+> `**` higlighted because from [previous post](https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023/9) 
 
 ## Backing Memory: `Data`? Really?
 
@@ -135,7 +148,7 @@ There are pros and cons to every underlying memory choice. One main thrust of th
 
 This is a harder task to get correct and a lot of API considerations can be worked out using the "easier" storage backed path. One concern was that a view only type would it lead indirect holding of a struct inside itself. 
 
-Also, it may make sense to have differing memory backings available like some other collections offer (contigous or not, etc) 
+Also, it may make sense to have differing memory backings available like some other collections offer (contiguous or not, etc) 
 
 [Example view based suggestion by Joe_Groff](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/33):
 
@@ -161,7 +174,7 @@ struct SmallArray<capacity: Int, T> {
 }
 ```
 
-This repo's implementation needs for count to be a let and all underlying values to be allocated to a "_storage" value with at least a default value. Append can't happen, the memory, whoever owns it, must exist by then end of the init. This is to maximize compatibility with C structures, which may not be the community's ultimate highest goal. TBD. While append might not make sense in this context, an `insert` with a similar API to Set, perhaps, (especially if the Element type is an Optional) where the `insert` can find its way to the first available nil or perhaps default value. 
+This repo's implementation needs for count to be a let and all underlying values to be allocated to a "_storage" value with at least a default value. Append can't happen, the memory, whoever owns it, must exist by then end of the init. This is to maximize compatibility with C structures, which may not be the community's ultimate highest goal. TBD. While append might not make sense in this context, a flexible collection `replace` method would be beneficial, includeing a replace(firstOf:with:)
 
 Previous underlying storage concern: 
 
@@ -171,7 +184,7 @@ Tuples as the backing memory have been floated and rejected.  The feel on the st
 
 ## Default Values
 
-A fixed size array needs to know what value to use if it's stuck with a location that it's been told to create (on init only) or clear without instruction as to a new value. Should that value simply be a required parameter on any function that could result in the ambiguity or a stored value for the instance? Or should the default value be a product of the associated type instead (zero for things that have one, nil for optionals...)
+A fixed size array needs to know what value to use if it's stuck with a location that it's been told to create or clear without instruction as to a new value. Should that value simply be a required parameter on any function that could result in the ambiguity or a stored value for the instance? Or should the default value be a product of the associated type instead (zero for things that have one, nil for optionals...)
 
 Examples possibilities: 
 
@@ -201,19 +214,31 @@ myFSC.setAll(to:5) //=> [5,5,5,5,5,5,5]
 *[tera](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/86)
 **[wadetregaskis](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/90) inn response to the fact that the 2nd might imply "complete the pattern"  a [vinculum](https://en.wikipedia.org/wiki/Vinculum_%28symbol%29) might be an alternative.
 
+
+This package has chosen the rout that if an action will need a default value it will ask for it in the parameters of the method at this time. An exception is made for types that have .zero or .none implemented, which will be able to take advantage of certain shortcuts that other Element types cannot. 
+
 ## References
 
 - Motivating Forum Post: https://forums.swift.org/t/approaches-for-fixed-size-arrays/
 - Previous Pitch: https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023
+- But they certainly weren't the first: https://forums.swift.org/t/checking-in-more-thoughts-on-arrays-and-variadic-generics/4948/3 (no fixed sized types called Array comes from here.)
 
-### Related Pitches & Proposals
+### Related Pitches and Proposals
+
+Many of these are _subsequent_ to the the summarized post. 
+
 - https://github.com/apple/swift-evolution/blob/main/proposals/0322-temporary-buffers.md
 - https://github.com/apple/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md
 - https://forums.swift.org/t/pitch-non-escapable-types-and-lifetime-dependency/69865
 - https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md
 - https://forums.swift.org/t/roadmap-language-support-for-bufferview/66211
 - https://forums.swift.org/t/pitch-safe-access-to-contiguous-storage/69888
+- https://forums.swift.org/t/pitch-synchronous-mutual-exclusion-lock/69889
 - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
+
+#### Before
+- 2021: https://forums.swift.org/t/pitch-improved-compiler-support-for-large-homogenous-tuples/49023/
+- 2016: https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20160208/009682.html
 
 ### Code that does similar or related things
 

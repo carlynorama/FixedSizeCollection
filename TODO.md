@@ -10,18 +10,25 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] examples from C interop section below
     - [ ] Fancy inits
         - [x] init directly from C fixed with array definition. (and test [x])
+        - [~] improved tuple functions to use Parameter pack 
+                - [x] some functions yes, 
+                - [ ] others cause compiler crash.
         - [ ] ?? FixedSizeCollection(copyOf: TypedPointer, count:N)
         - [x] be able to put back into C var (and test [x])
         - [x] init from buffer view  (and test [x])
     - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
-    - [ ] ?? looking for zeros / default value as nil?
     - [ ] pass an individual element or slice to a C function.
-- [ ] Default Values
-    - [ ] ?? Typed based auto set?
-    - [ ] ?? Stored value? 
+    - [ ] replace functions must work with tuples, too.
+    - [ ] provide copy that is a tuple version 
+- [ ] Default Values initial call
+    - [ ] ~~?? Stored value?~~ remove stored value in favor of explicit functions
+    - [ ] enable certain methods for when Element is `ExpressibleByIntegerLiteral` or Optional
+    - - ~~[ ] default is a keyword, is there a better label ~~ no longer going to be a thing. 
 - [ ] If called a Collection it should match Collection preconceptions as much as possible. 
-    - [  ] ?? & pointing to typed version of storage?
-        - [  ] if not, different prefix that returns pointer to storage? 
+    - [ ] ?? Many collection conformances require an empty initializer, which is not a thing for this type. TBD how to handle this. 
+    - [ ] ?? the storage type for this collection should potentially be ~Copyable, consequences? 
+    - [  ] ?? & pointing to typed version of storage? (see ?? on Unsafe)
+        - [  ] if not, different prefix that returns pointer to storage? see 
     - [ ~ ] subscripts 
         - [x] add bounds checking as subscripts should [match collections](https://github.com/apple/swift-collections/blob/main/Sources/SortedCollections/SortedSet/SortedSet%2BSubscripts.swift) bounds check.
         - [x] subscript check function
@@ -37,20 +44,41 @@ A done in this context means initial interface, no assurance on quality of imple
         - [x] proto sunc
         - [x] tests [x] gunc [x] sunc
     - [ ] No `append` for now. Makes no sense for the _Storage type. But yes an insert on FSC with optional Element type that will look for a default value to replace.
-        - [ ] replace(first: E, with: E)
-        - [ ] replace(at: N, with: E)
-        - [ ] replace(at: R<N>, with: E)
-        - [ ] replace(at: R<N>, with: [E]) 
-    - [x] variadic inits
+        - [x] replace(first: E, with: E), [x] test
+        - [x] replace(at: N, with: E), [x] test
+        - [x] replace(at: R<N>, with: E), [x] test
+        - [x] replace(at: R<N>, with: [E]), [x] test
+        - [x] replaceAll(with:E) [x] test
+        - [ ] replaceAll(_ E: with:E) / replaceAll(where:with) [ ] test
+            - [ ] plug into index / Sequence first? What's available "for free"
+    - [x] variadic (array) inits
         - [x] written
         - [x] tests
-    - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)?
+    - [ ] [Subsequence](https://github.com/apple/swift-collections/blob/427083e64d5c4321fd45654db48f1e7682d2798e/Sources/OrderedCollections/OrderedSet/OrderedSet%2BSubSequence.swift#L24)
+        - [ ] needed for RangeReplaceableCollection conformance (see Replace.swift)
+    - [~] the withUnsafes*
+       [x] all implmented
+       [x] all tested
+       [] ?? I have them pointing to _storage, right with that spelling? see & Question.
         - [ ] get subsequence range @inlinable
+- [ ] mask, flood and clear
+    - [x] for .zero and nil defined Elements allow .clear() and .clear(at:)
+        - [x] clear for numerics [x] test
+        - [x] clear for optionals [x] test
+    - [x] ~~.flood(with:)~~ replaceAll [x] test
+    - [ ] some kind of [Bool][Element] zip feature, maybe called mask. TBD.
+        - [ ] related to replaceAll(where)
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
-- [ ] matrix[0][24] style init of some format
-- [ ] matrix access
-- [ ] Integration into Swift (Longer Term)
-    - [ ] what would it take to replace Tuple as the Type Of Choice for C arrays? 
+- [ ] matrix
+    - [ ] matrix init
+    - [ ] matrix access
+    - [ ] matrix update
+- [ ] make _Storage a protocol so it can be swapped out. 
+    - [ ] identify everything being used that's Data's
+    - [ ] include it in the protocol
+- [ ] Integration into Swift, Swift Collections, or just a Package with a 1.0 release (Longer Term)
+    - [ ] what is going to be the future type of choice for C Arrays? 
+
 
 ## Documentation
 
@@ -70,7 +98,11 @@ A done in this context means initial interface, no assurance on quality of imple
 -  ~~ [ ] in a package manager how to have a per file target inclusion? (testing functions) ~~
 - [x] separate testing code C and Swift Bridge for testing code C into own targets 
     - [ ] is this best approach for using C (C++?) with XCTest
-- [ ] All the C is currently just for testing, but should add nullability(most modern?), but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18) so folks referring to test library for application ideas can have that as a reference.
+- [ ] the test messages could be better
+- [ ] the testing subgroups could be smaller
+- [ ] move all the tests out side of the measures
+- [ ] ?? how to measure throwing functions. Do I really have to catch them?
+- [ ] All the C is currently just for testing, but should add nullability(most modern?)?, but leave a chunk old style with header wrapper [as explained here](https://forums.swift.org/t/inconsistent-treatment-bewtween-swift-pointer-parameters-and-c-ones/69855) and [here](https://discourse.llvm.org/t/rfc-nullability-qualifiers/35672/18) so folks referring to test library for application ideas can have that as a reference.
 
 ## Repo Meta
 - [x] [swift-format](https://github.com/apple/swift-format/) CLI installed & ran with default rules.
@@ -80,13 +112,14 @@ A done in this context means initial interface, no assurance on quality of imple
             swift-format format -r -i
             swift-format lint -r . 
         ``` 
-- [   ] add plugin? it's not in the other Swift repos, which do official Swift projects actually use? 
+- [ ] add plugin? it's not in the other Swift repos, which do official Swift projects actually use? 
 - [ ] platform info in Package.swift, TBD how far back? 
 - [ ] what .clang-format file to use? 
 
 ## Misc & General Research Q's 
-- [ ] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up.
-- [ ] default is a keyword, is there a better label 
+- [ ] Hmm... this should be [~Copyable](https://github.com/apple/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md) shouldn't it? 
+    - Loose ability to conform to RandomAccessCollection?
+
 - [ ] Iterators and Stream, what comes with Random Access Collection? 
 - [ ] SIL Builtins,  @inline(always), @alwaysEmitIntoClient for making Matrix type (https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/9)
 - [ x ] [faster bounds comparator](https://forums.swift.org/t/why-does-swift-use-signed-integers-for-unsigned-indices/69812/5)`UInt(bitPattern: x &- l) < UInt(bitPattern: h - l)` by TellowKrinkle
@@ -94,6 +127,8 @@ A done in this context means initial interface, no assurance on quality of imple
     - [] [Which Types](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/19)?(CXType_ConstantArray, CXType_Vector, CXType_IncompleteArray, CXType_VariableArray, CXType_DependentSizedArray)
     - [] [Matrix<10,100>](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/24)
 - [ ] "getting a pointer to it promotes the value to the heap AFAIK" [post](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/25) how to test?
+- [x] tuple inits were improved weren't they? no more limit on SwiftUI Group{}, look that up. 
+    - YES! [Variadic Generics](https://forums.swift.org/t/variadic-generics/54511) thing. 
 
 - [ ] seems related:
     - https://forums.swift.org/t/pitch-introduce-for-borrow-and-for-inout-to-provide-non-copying-collection-iteration/62549
@@ -107,6 +142,7 @@ A done in this context means initial interface, no assurance on quality of imple
     - https://forums.swift.org/t/a-roadmap-for-improving-swift-performance-predictability-arc-improvements-and-ownership-control/54206
     - https://forums.swift.org/t/short-array-optimisation/68082/3 
     - https://forums.swift.org/t/pitch-synchronous-mutual-exclusion-lock/69889
+    
 
 ## NonC Interop Targets
 
@@ -114,7 +150,7 @@ A done in this context means initial interface, no assurance on quality of imple
 
 > It could also easily replace ManagedBuffer which would be a win in and of itself in my humble opinion.[forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
 
-> As a vector type backing [forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79)
+> As a vector type backing [forum](https://forums.swift.org/t/approaches-for-fixed-size-arrays/58894/79) Also `Vector<T, size: Int>` [here](https://forums.swift.org/t/checking-in-more-thoughts-on-arrays-and-variadic-generics/4948/16) 
 
 
 

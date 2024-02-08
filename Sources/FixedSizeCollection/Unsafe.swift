@@ -6,6 +6,7 @@
 //
 
 //TODO: Should all the withMemoryRebounds on this page be .assumingMemoryBound
+//TODO: Made the call that all of these point to _storage not the full type. Right call?
 
 import Foundation
 
