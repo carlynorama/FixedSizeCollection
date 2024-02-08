@@ -24,6 +24,6 @@ extension FixedSizeCollection {
   public func copyIntoTupleDestination<U>(tuple: inout U) throws {
     //checks are in _load function
     let tupleCount = try Self._verifyCount(of: tuple)
-      try _load(tupleCount, bytesOfType: Element.self, into: &tuple)
+    try _load(tupleCount, bytesOfType: Element.self, into: &tuple)
   }
 }

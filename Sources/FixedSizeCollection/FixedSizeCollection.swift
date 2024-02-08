@@ -49,12 +49,11 @@ extension FixedSizeCollection {
       Data(buffer: pointer)
     }
 
-      do {
-          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
-      }
-      catch {
-          preconditionFailure("storage size verification failed.")
-      }
+    do {
+      let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+    } catch {
+      preconditionFailure("storage size verification failed.")
+    }
   }
 
   @inlinable
@@ -83,12 +82,11 @@ extension FixedSizeCollection {
     }
     self.count = values.count
 
-      do {
-          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
-      }
-      catch {
-          preconditionFailure("storage size verification failed.")
-      }
+    do {
+      let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+    } catch {
+      preconditionFailure("storage size verification failed.")
+    }
   }
 
   @inlinable
@@ -109,12 +107,11 @@ extension FixedSizeCollection {
     self._storage = Data(buffer: pointer)
     self.count = pointer.count
 
-      do {
-          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
-      }
-      catch {
-          preconditionFailure("storage size verification failed.")
-      }
+    do {
+      let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+    } catch {
+      preconditionFailure("storage size verification failed.")
+    }
   }
 
   public init<T>(asCopyOfTuple source: T, ofType: Element.Type) {
@@ -140,12 +137,11 @@ extension FixedSizeCollection {
     self._storage = storage
     self.count = count
 
-      do {
-          let _ = try Self._verifyCount(of: _storage, expectedCount: count)
-      }
-      catch {
-          preconditionFailure("storage size verification failed.")
-      }
+    do {
+      let _ = try Self._verifyCount(of: _storage, expectedCount: count)
+    } catch {
+      preconditionFailure("storage size verification failed.")
+    }
 
   }
 

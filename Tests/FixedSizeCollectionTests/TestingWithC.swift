@@ -13,40 +13,41 @@ import XCTest
 final class WithCTests: XCTestCase {
 
   //MARK: CArrays
-    
-    func testtupleCount() throws {
-        let exptdCnt = 7
-        //should pass
-        let childrenChecked = try FixedSizeCollection<Int>._verifyCount(of: fsc_int32_array)
-        XCTAssertEqual(childrenChecked, exptdCnt, "tupleSize1 no match.")
-        
-        //will throw if no match.
-        let _ =  try FixedSizeCollection<Int>._verifyCount(of: fsc_int32_array, expectedCount: exptdCnt)
-        
-        do {
-            let _ =  try FixedSizeCollection<Int>._verifyCount(of: fsc_int32_array, expectedCount: exptdCnt + 3)
-            XCTFail("exptdCnt + 3 should have thrown.")
-        } catch {
-            //nothing to do
-        }
-        
-        do {
-            let _ =  try FixedSizeCollection<Int>._verifyCount(of: fsc_int32_array, expectedCount: exptdCnt - 3)
-            XCTFail("exptdCnt - 3 should have thrown.")
-        } catch {
-            //nothing to do
-        }
-        
-        
-        let memCheckedCount =  try FixedSizeCollection<Int32>._erasedVerifyCount(of: fsc_int32_array, boundTo: Int32.self)
-        
-        
-        XCTAssertEqual(childrenChecked, memCheckedCount, "tupleSize1 no match.")
-        
+
+  func testtupleCount() throws {
+    let exptdCnt = 7
+    //should pass
+    let childrenChecked = try FixedSizeCollection<Int>._verifyCount(of: fsc_int32_array)
+    XCTAssertEqual(childrenChecked, exptdCnt, "tupleSize1 no match.")
+
+    //will throw if no match.
+    let _ = try FixedSizeCollection<Int>._verifyCount(of: fsc_int32_array, expectedCount: exptdCnt)
+
+    do {
+      let _ = try FixedSizeCollection<Int>._verifyCount(
+        of: fsc_int32_array, expectedCount: exptdCnt + 3)
+      XCTFail("exptdCnt + 3 should have thrown.")
+    } catch {
+      //nothing to do
     }
 
+    do {
+      let _ = try FixedSizeCollection<Int>._verifyCount(
+        of: fsc_int32_array, expectedCount: exptdCnt - 3)
+      XCTFail("exptdCnt - 3 should have thrown.")
+    } catch {
+      //nothing to do
+    }
+
+    let memCheckedCount = try FixedSizeCollection<Int32>._erasedVerifyCount(
+      of: fsc_int32_array, boundTo: Int32.self)
+
+    XCTAssertEqual(childrenChecked, memCheckedCount, "tupleSize1 no match.")
+
+  }
+
   func testTupleEnforcement() throws {
-      
+
     let tmp_array = FixedSizeCollection<Int32>._get(
       valuesBoundTo: Int32.self, from: fsc_int32_array)
 
@@ -66,7 +67,8 @@ final class WithCTests: XCTestCase {
     //uint8_t random_provider_uint8_array[27];
     //uint32_t random_provider_RGBA_array[9];
 
-    let tmp_Array = FixedSizeCollection<Int32>._getAssuming(valuesBoundTo: Int32.self, from: fsc_int32_array)
+    let tmp_Array = FixedSizeCollection<Int32>._getAssuming(
+      valuesBoundTo: Int32.self, from: fsc_int32_array)
     let tC = FixedSizeCollection.makeFixedSizeCollection(
       count: tmp_Array.count, fillValue: 0, values: tmp_Array)
     //print(tC.count)

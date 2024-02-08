@@ -66,7 +66,7 @@ final class InitsNStorage: XCTestCase {
     let baseTuple = (45, 27, 83, 26, 44, 98, 5)
 
     let tmp_Array = FixedSizeCollection<Int>._getAssuming(
-        valuesBoundTo: Int.self, from: baseTuple)
+      valuesBoundTo: Int.self, from: baseTuple)
     let tC = FixedSizeCollection.makeFixedSizeCollection(
       count: tmp_Array.count, fillValue: 0, values: tmp_Array)
 
@@ -119,15 +119,13 @@ final class InitsNStorage: XCTestCase {
 
     //testValues are Ints.
     XCTAssertEqual(count, gVC, "count and storage size didn't work")
-      
-      do {
-          let _ = try FixedSizeCollection<Int>._verifyCount(of: _storage, expectedCount: count)
-      }
-      catch {
-          XCTFail("storage size verification failed.")
-      }
-      
-      
+
+    do {
+      let _ = try FixedSizeCollection<Int>._verifyCount(of: _storage, expectedCount: count)
+    } catch {
+      XCTFail("storage size verification failed.")
+    }
+
   }
 
   func testInferredCountCode() throws {
@@ -156,12 +154,11 @@ final class InitsNStorage: XCTestCase {
     //testValues are Ints.
     XCTAssertEqual(count, gVC, "count and storage size didn't work")
 
-      do {
-          let _ = try FixedSizeCollection<Int>._verifyCount(of: _storage, expectedCount: count)
-      }
-      catch {
-          XCTFail("storage size verification failed.")
-      }
+    do {
+      let _ = try FixedSizeCollection<Int>._verifyCount(of: _storage, expectedCount: count)
+    } catch {
+      XCTFail("storage size verification failed.")
+    }
 
   }
 
