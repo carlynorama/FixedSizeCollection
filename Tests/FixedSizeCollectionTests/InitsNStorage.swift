@@ -65,10 +65,10 @@ final class InitsNStorage: XCTestCase {
   func testInitFromTuple() throws {
     let baseTuple = (45, 27, 83, 26, 44, 98, 5)
 
-    let tmp_Array = FixedSizeCollection<Int>._getAssuming(
+    let tmpArray = FixedSizeCollection<Int>._getAssuming(
       valuesBoundTo: Int.self, from: baseTuple)
     let tC = FixedSizeCollection.makeFixedSizeCollection(
-      count: tmp_Array.count, fillValue: 0, values: tmp_Array)
+      count: tmpArray.count, fillValue: 0, values: tmpArray)
 
     XCTAssertEqual(tC[0], baseTuple.0, "0: no match")
     XCTAssertEqual(tC[1], baseTuple.1, "1: no match")

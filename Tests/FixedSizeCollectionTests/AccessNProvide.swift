@@ -41,12 +41,12 @@ final class AccessAndProvide: XCTestCase {
     //let baseArray = [1, 2, 3, 7]
     let testCollection = FixedSizeCollection<Int> { baseArray }
     let range = 3..<7
-    let base_sub = Array(baseArray[range])
+    let baseSub = Array(baseArray[range])
     measure {
-      let tc_sub = testCollection.guncCopyRangeAsArray(range)
-      for i in 0..<base_sub.count {
+      let tcSub = testCollection._guncCopyRangeAsArray(range)
+      for i in 0..<baseSub.count {
         XCTAssertEqual(
-          tc_sub[i], base_sub[i], "did not retrieve expected value at \(i)")
+          tcSub[i], baseSub[i], "did not retrieve expected value at \(i)")
       }
     }
   }
@@ -56,12 +56,12 @@ final class AccessAndProvide: XCTestCase {
     //let baseArray = [1, 2, 3, 7]
     let testCollection = FixedSizeCollection<Int> { baseArray }
     let range = 3..<7
-    let base_sub = Array(baseArray[range])
+    let baseSub = Array(baseArray[range])
     measure {
-      let tc_sub = try! testCollection.copyValuesAsArray(range: range)
-      for i in 0..<base_sub.count {
+      let tcSub = try! testCollection.copyValuesAsArray(from: range)
+      for i in 0..<baseSub.count {
         XCTAssertEqual(
-          tc_sub[i], base_sub[i], "did not retrieve expected value at \(i)")
+          tcSub[i], baseSub[i], "did not retrieve expected value at \(i)")
       }
     }
   }
@@ -71,12 +71,12 @@ final class AccessAndProvide: XCTestCase {
     //let baseArray = [1, 2, 3, 7]
     let testCollection = FixedSizeCollection<Int> { baseArray }
     let range = 3..<7
-    let base_sub = Array(baseArray[range])
+    let baseSub = Array(baseArray[range])
     measure {
-      let tc_sub = testCollection[range]
-      for i in 0..<base_sub.count {
+      let tcSub = testCollection[range]
+      for i in 0..<baseSub.count {
         XCTAssertEqual(
-          tc_sub[i], base_sub[i], "did not retrieve expected value at \(i)")
+          tcSub[i], baseSub[i], "did not retrieve expected value at \(i)")
       }
     }
   }
@@ -84,6 +84,7 @@ final class AccessAndProvide: XCTestCase {
     let exptdValue = 34
     let testCollection = FixedSizeCollection<Int>(5, fillValue: exptdValue)
     measure {
+      // swift-format-ignore: ReplaceForEachWithForLoop
       testCollection.forEach {
         XCTAssertEqual($0, exptdValue, "did not retrieve expected value")
       }

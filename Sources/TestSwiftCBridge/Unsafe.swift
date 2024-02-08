@@ -84,24 +84,24 @@ extension FixedSizeCollection {
   //but if really want just the pointer
   static func boundPointerPrint() throws {
     let testCollection = FixedSizeCollection<Int32>(5, fillValue: 5)
-    let tmp_count = testCollection.count
+    let tmpCount = testCollection.count
     //Swift Type:  'UnsafePointer<Int32>'
     //C func: void (cont int*, const size_t)
     try testCollection.withUnsafePointer { pointer in
       if let pointer {
-        acknowledge_cint_buffer_const(pointer, tmp_count)
+        acknowledge_cint_buffer_const(pointer, tmpCount)
       }
     }
   }
 
   static func boundMutablePointerPrint() throws {
     var testCollection = FixedSizeCollection<Int32>(5, fillValue: 5)
-    let tmp_count = testCollection.count
+    let tmpCount = testCollection.count
     //Swift Type:  'UnsafePointer<Int32>'
     //C func: void (int*, const size_t)
     try testCollection.withUnsafeMutablePointer { pointer in
       if let pointer {
-        acknowledge_cint_buffer(pointer, tmp_count)
+        acknowledge_cint_buffer(pointer, tmpCount)
       }
     }
   }

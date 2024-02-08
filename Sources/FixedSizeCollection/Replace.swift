@@ -49,7 +49,7 @@ extension FixedSizeCollection {
     guard range.count == newValue.count else {
       fatalError("replacement value doesn't match range")
     }
-    suncReplacingSubrange(range: range, with: newValue)
+    _suncReplacingSubrange(range: range, with: newValue)
   }
 
   //TODO: RangeReplaceableCollection
@@ -100,7 +100,7 @@ extension FixedSizeCollection {
     guard range.count == patchArray.count else {
       fatalError("replacement value doesn't match range")
     }
-    suncReplacingSubrange(range: range, with: patchArray)
+    _suncReplacingSubrange(range: range, with: patchArray)
   }
 
 }
@@ -136,7 +136,7 @@ extension FixedSizeCollection where Element: ExpressibleByNilLiteral {
     //TODO: Inspect the bytes of some Optionals set to nil
     //unchecked because self is sending the values.
     for i in self.range {
-      sunc(at: i, newValue: nil)
+      _sunc(at: i, newValue: nil)
     }
   }
 

@@ -40,7 +40,7 @@ extension FixedSizeCollection {
         //TODO: What's the right error
         fatalError("subscript invalid")
       }
-      return guncCopyRangeAsArray(r)
+      return _guncCopyRangeAsArray(r)
     }
     set {
       //public replace function has bounds check.

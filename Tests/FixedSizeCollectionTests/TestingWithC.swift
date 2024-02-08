@@ -48,10 +48,10 @@ final class WithCTests: XCTestCase {
 
   func testTupleEnforcement() throws {
 
-    let tmp_array = FixedSizeCollection<Int32>._get(
+    let tmpArray = FixedSizeCollection<Int32>._get(
       valuesBoundTo: Int32.self, from: fsc_int32_array)
 
-    let tC = FixedSizeCollection(tmp_array)
+    let tC = FixedSizeCollection(tmpArray)
 
     XCTAssertEqual(tC[0], fsc_int32_array.0, "0: no match.")
     XCTAssertEqual(tC[1], fsc_int32_array.1, "1: no match.")
@@ -67,10 +67,10 @@ final class WithCTests: XCTestCase {
     //uint8_t random_provider_uint8_array[27];
     //uint32_t random_provider_RGBA_array[9];
 
-    let tmp_Array = FixedSizeCollection<Int32>._getAssuming(
+    let tmpArray = FixedSizeCollection<Int32>._getAssuming(
       valuesBoundTo: Int32.self, from: fsc_int32_array)
     let tC = FixedSizeCollection.makeFixedSizeCollection(
-      count: tmp_Array.count, fillValue: 0, values: tmp_Array)
+      count: tmpArray.count, fillValue: 0, values: tmpArray)
     //print(tC.count)
     //
     XCTAssertEqual(tC[0], fsc_int32_array.0, "0: no match.")
@@ -99,7 +99,7 @@ final class WithCTests: XCTestCase {
     //uint8_t fsc_uint8_array[27]
     let baseArray: [UInt8] = Array(repeating: UInt8.random(in: 0..<100), count: 27)
     let tC = FixedSizeCollection(baseArray)
-    try tC.copyIntoTupleDestination(tuple: &fsc_uint8_array)
+    try tC.copyValuesInto(tuple: &fsc_uint8_array)
 
     XCTAssertEqual(baseArray[0], fsc_uint8_array.0, "00: no match")
     XCTAssertEqual(baseArray[1], fsc_uint8_array.1, "01: no match")
