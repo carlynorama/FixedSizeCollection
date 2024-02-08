@@ -24,6 +24,7 @@ internal extension FixedSizeCollection {
         
     //MARK: Getting Values Out
     //Less safe in the case that the memory is not in fact bound to this.
+    //replacing with each T,  compiler craches to non zero exit code
     @inlinable
     static func _getFixedSizeCArrayAssumed<T, R>(source:T, boundToType:R.Type) -> [R] {
         return Swift.withUnsafeBytes(of: source) { (rawPointer) -> [R] in
@@ -49,7 +50,8 @@ internal extension FixedSizeCollection {
     //TODO: Compare speed. This version checks type.
     //The currently use one other is a pinky swear from the client
     //keep an eye on https://github.com/apple/swift/pull/70227
-    static func _get<T, R>(valuesBoundTo:R.Type, from tuple: T) -> [R] {
+    //Mirrors work fine
+    static func _get<each T, R>(valuesBoundTo:R.Type, from tuple: (repeat each T)) -> [R] {
             var newArray:[R] = []
             Mirror(reflecting: tuple).children.forEach { child in
             if let newValue = child.value as? R {
@@ -62,7 +64,7 @@ internal extension FixedSizeCollection {
     //MARK: Putting Back
     //Uses withMemoryRebound. Be sure target's memory is in fact bound to that.
     @inlinable
-    func _loadIntoTuple<T, R>(tuple: inout T, count:N, type:R.Type) throws {
+    func _loadIntoTuple<each T, R>(tuple: inout (repeat each T), count:N, type:R.Type) throws {
         precondition(count == self.count)
         precondition(type == Element.self)
         precondition(MemoryLayout.size(ofValue: tuple) == MemoryLayout<R>.stride * count)
@@ -94,6 +96,8 @@ internal extension FixedSizeCollection {
         try Swift.withUnsafeMutablePointer(to: &tuple) { tuplePointer in
             precondition(Int(bitPattern: tuplePointer).isMultiple(of: MemoryLayout<R>.alignment))
             let _ = try self.withUnsafeBufferPointer { bufferPointer in
+                //Pack expansion requires that 'each U' and '' have the same shape
+                //on line below when switch from type erased
                 memcpy(tuplePointer, bufferPointer?.baseAddress, count * MemoryLayout<R>.stride)
             }
         }
