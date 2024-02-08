@@ -10,11 +10,13 @@ A done in this context means initial interface, no assurance on quality of imple
     - [ ] examples from C interop section below
     - [ ] Fancy inits
         - [x] init directly from C fixed with array definition. (and test [x])
+        - [~] improved tuple functions to use Parameter pack 
+                - [x] some functions yes, 
+                - [ ] others cause compiler crash.
         - [ ] ?? FixedSizeCollection(copyOf: TypedPointer, count:N)
         - [x] be able to put back into C var (and test [x])
         - [x] init from buffer view  (and test [x])
     - [ ] ?? coerce it to and from an equivalent tuple form using "as" 
-    - [ ] ?? looking for zeros / default value as nil?
     - [ ] pass an individual element or slice to a C function.
     - [ ] replace functions must work with tuples, too.
     - [ ] provide copy that is a tuple version 
@@ -65,6 +67,7 @@ A done in this context means initial interface, no assurance on quality of imple
         - [x] clear for optionals [x] test
     - [x] ~~.flood(with:)~~ replaceAll [x] test
     - [ ] some kind of [Bool][Element] zip feature, maybe called mask. TBD.
+        - [ ] related to replaceAll(where)
 - [ ] a safe accessor that will throw instead of fatal error if out of bounds
 - [ ] matrix
     - [ ] matrix init
@@ -73,8 +76,8 @@ A done in this context means initial interface, no assurance on quality of imple
 - [ ] make _Storage a protocol so it can be swapped out. 
     - [ ] identify everything being used that's Data's
     - [ ] include it in the protocol
-- [ ] Integration into Swift (Longer Term)
-    - [ ] what would it take to replace Tuple as the Type Of Choice for C arrays? How is and is that not StorageView? Is it even needed once StorageView exists. 
+- [ ] Integration into Swift, Swift Collections, or just a Package with a 1.0 release (Longer Term)
+    - [ ] what is going to be the future type of choice for C Arrays? 
 
 
 ## Documentation

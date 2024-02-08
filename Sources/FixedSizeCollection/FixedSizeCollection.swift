@@ -105,7 +105,9 @@ extension FixedSizeCollection {
     public init<T>(asCopyOfTuple source:T, ofType:Element.Type) {
         //There is a safer version that goes through array.
         //It confirms the type.
-        //_tupleAsArray<U, T>(tuple:U, isType:T.Type)
+        //_get(valueOfType:from:(repeat each T)), but it's
+        //causing compiler crashed when used with init.
+        //TODO: figure out how to make an init with a Parameter Pack tuple that doesn't crash. 
         let tmp = Self._getFixedSizeCArrayAssumed(source: source, boundToType: Element.self)
         self = Self.makeFixedSizeCollection(tmp)
         do {

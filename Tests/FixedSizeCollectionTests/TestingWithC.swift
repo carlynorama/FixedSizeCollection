@@ -48,7 +48,9 @@ final class WithCTests: XCTestCase {
         XCTAssertEqual(tC[6], fsc_int32_array.6, "6: no match.")
         
         
-        let testCT = FixedSizeCollection(asCopyOfTuple:fsc_int32_array, ofType: Int32.self)
+        //let testCT = FixedSizeCollection(valuesOfType: Int32.self, from: fsc_int32_array)
+        
+        let testCT = FixedSizeCollection(asCopyOfTuple: fsc_int32_array, ofType:Int32.self)
         
         XCTAssertEqual(testCT[0], fsc_int32_array.0, "0: no match")
         XCTAssertEqual(testCT[1], fsc_int32_array.1, "1: no match")
