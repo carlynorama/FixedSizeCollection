@@ -42,9 +42,9 @@ final class ReplaceNUpdate: XCTestCase {
     
     func testSubscriptRangedUpdate() {
         let baseArray: [Int32] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        let expectedArray: [Int32] = [0, 1, 44, 43, 42, 5, 6, 7, 8, 9]
+        let expectedArray: [Int32] = [0, 1, 2, 3, 44, 43, 42, 7, 8, 9]
         let newValue: [Int32] = [44, 43, 42]
-        let range = (2..<5)
+        let range = (4..<7)
         //let baseArray = [1, 2, 3, 7]
         var tC = FixedSizeCollection<Int32> { baseArray }
         measure {
@@ -71,13 +71,19 @@ final class ReplaceNUpdate: XCTestCase {
     }
     
     func testReplaceFwE() throws {
-        let baseArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        var baseArray = [12, 42, 85, 32, 41, 45, 27, 100, 18, 2]
+        let testVar = baseArray[Int.random(in: 0..<baseArray.count)]
+        let expectedIndex = baseArray.firstIndex(of: testVar)!
         //let baseArray = [1, 2, 3, 7]
         var testCollection = FixedSizeCollection<Int> { baseArray }
         let newVar = Int.random(in: 0...100)
         //TODO: how to measure throwing functions
-        try testCollection.replace(first: 3, with: newVar)
-        XCTAssertEqual(testCollection[4], newVar, "did not update correctly at position 4")
+        try testCollection.replace(first: testVar, with: newVar)
+        baseArray[expectedIndex] = newVar
+        for i in 0..<baseArray.count {
+            XCTAssertEqual(
+                testCollection[i], baseArray[i],  "\(i) is \(testCollection[i]), expected \(baseArray[i])")
+        }
     }
     
     func testReplaceRwR() throws {
