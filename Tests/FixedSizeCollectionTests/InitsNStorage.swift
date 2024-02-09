@@ -27,6 +27,19 @@ final class InitsNStorage: XCTestCase {
     XCTAssertEqual(optionalDefault[3], nil, "3 incorrect")
     XCTAssertEqual(optionalDefault[4], nil, "4 incorrect")
   }
+    
+    func testExpressibleByArrayLiteralInit() {
+        let testCollection:FixedSizeCollection<Int> = [8,6,7,5,3,0,9]
+        let expectedArray = [8,6,7,5,3,0,9]
+        
+        XCTAssertEqual(expectedArray.count, testCollection.count, "count incorrect")
+        for i in 0..<testCollection.count {
+          XCTAssertEqual(
+            testCollection[i], expectedArray[i], "\(i): no match"
+          )
+        }
+        
+    }
 
   func testVariadicInferredInit() {
     let expectedArray = [1, 2, 3]
